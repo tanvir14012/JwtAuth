@@ -1,0 +1,13 @@
+.spacer {
+    flex: 1 1 auto;
+}
+
+@media screen and (max-width: 476px) {
+    .flex-xs-column {
+        flex-direction: column;
+    }
+    
+    .align-items-xs-start {
+        align-items: flex-start;
+    }
+}

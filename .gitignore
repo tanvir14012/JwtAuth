@@ -1,0 +1,99 @@
+
+JwtAuth/*.swp
+JwtAuth/*.*~
+JwtAuth/project.lock.json
+JwtAuth/.DS_Store
+JwtAuth/*.pyc
+JwtAuth/nupkg/
+
+# Visual Studio Code
+.vscode
+
+# Rider
+JwtAuth/.idea
+
+# User-specific files
+JwtAuth/*.suo
+JwtAuth/*.user
+JwtAuth/*.userosscache
+JwtAuth/*.sln.docstates
+
+# Build results
+JwtAuth/[Dd]ebug/
+JwtAuth/[Dd]ebugPublic/
+JwtAuth/[Rr]elease/
+JwtAuth/[Rr]eleases/
+JwtAuth/x64/
+JwtAuth/x86/
+JwtAuth/build/
+JwtAuth/bld/
+JwtAuth/[Bb]in/
+JwtAuth/[Oo]bj/
+JwtAuth/[Oo]ut/
+JwtAuth/msbuild.log
+JwtAuth/msbuild.err
+JwtAuth/msbuild.wrn
+JwtAuth/Properties/PublishProfiles/
+JwtAuth/.config/
+
+#Migrations
+JwtAuth/Migrations/
+
+#App-settings
+JwtAuth/appsettings.json
+JwtAuth/appsettings.Development.json
+
+# Visual Studio 2015
+.vs/
+
+
+# Angular Front-end
+Front-end/.vscode
+
+# compiled output
+Front-end/dist
+Front-end/tmp
+Front-end/out-tsc
+# Only exists if Bazel was run
+Front-end/bazel-out
+
+# dependencies
+Front-end/node_modules
+
+# profiling files
+chrome-profiler-events*.json
+
+# IDEs and editors
+Front-end/.idea
+Front-end/.project
+Front-end/.classpath
+Front-end/.c9/
+Front-end/*.launch
+Front-end/.settings/
+Front-end/*.sublime-workspace
+
+# IDE - VSCode
+Front-end/.vscode/*
+Front-end/!.vscode/settings.json
+Front-end/!.vscode/tasks.json
+Front-end/!.vscode/launch.json
+Front-end/!.vscode/extensions.json
+Front-end/.history/*
+
+# misc
+Front-end/.sass-cache
+Front-end/connect.lock
+Front-end/coverage
+Front-end/libpeerconnection.log
+Front-end/npm-debug.log
+Front-end/yarn-error.log
+Front-end/testem.log
+Front-end/typings
+
+
+
+# System Files
+Front-end/.DS_Store
+Front-end/Thumbs.db
+
+Front-end/.gitignore

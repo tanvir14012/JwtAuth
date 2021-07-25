@@ -1,0 +1,21 @@
+<div class="container-fluid px-0">
+    <mat-toolbar *ngIf="isAuthenticated" class="d-flex h-auto flex-xs-column align-items-xs-start">
+            <span class="pe-2">🅹🆆🆃🅰🆄🆃🅷</span>
+            <button mat-button color="primary" class="pe-2" routerLink="/home">
+                Home
+            </button>
+            <button mat-button color="primary" class="pe-2" routerLink="/profile">
+                My Profile
+            </button>
+            <button *ngIf="isAdmin" mat-button color="primary" class="pe-2" routerLink="/users">
+                Manage Users
+            </button>
+            <span class="spacer"></span>
+            <button mat-mini-fab color="warn" class="my-2" (click)="signOut()" matTooltip="Sign out" [matTooltipPosition]="'left'">
+                <mat-icon>logout</mat-icon>
+            </button>
+    </mat-toolbar>
+    <div>
+        <router-outlet></router-outlet>
+    </div>
+</div>

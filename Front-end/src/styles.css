@@ -1,0 +1,9 @@
+/* You can add global styles to this file, and also import other style files */
+
+.auth-bg {
+    background-image: url('~/src/assets/background.jpeg');
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

@@ -1,0 +1,30 @@
+<div class="auth-bg wh-100 d-flex align-items-center">
+    <div class="container">
+        <div class="row justify-content-center m-2">
+            <div class="col-sm-12 col-md-8 col-lg-6 bg-white rounded">
+                <h1 class="text-center mt-4">Sign in</h1>
+                <form [formGroup]="form" class="d-flex flex-column m-4">
+                    <mat-form-field>
+                        <mat-label>Email</mat-label>
+                        <input matInput type="email" formControlName="email" required>
+                        <mat-error *ngIf="form.controls.email.invalid && (form.controls.email.dirty
+                         || form.controls.email.touched)">Please choose a valid email</mat-error>
+                    </mat-form-field>
+                    <mat-form-field class="mt-4">
+                        <mat-label>Password</mat-label>
+                        <input matInput type="password" [type]="passHide ? 'password' : 'text'" formControlName="password" required>
+                        <button mat-icon-button matSuffix (click)="passHide = !passHide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="passHide">
+                            <mat-icon>{{passHide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                        </button>
+                        <mat-error *ngIf="form.controls.password.invalid && (form.controls.password.dirty
+                         || form.controls.password.touched)">Password length should be at least six, with 1 uppercase, 1 lowercase, 1 digit and 1 special character</mat-error>
+                    </mat-form-field>
+                    <mat-error *ngIf="attemptFailed == true">Incorrect email or password</mat-error>
+                    <mat-error *ngIf="serverError == true">Something went wrong! Please try again later</mat-error>
+                    <button mat-raised-button color="primary" class="mt-4" (click)="onSubmit()">Sign in</button>
+                    <p class="mt-4 fw-bold text-center">New member?<a class="fw-bold text-info ps-2" href="/sign-up">Sign up</a></p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

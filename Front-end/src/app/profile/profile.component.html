@@ -1,0 +1,125 @@
+<div class="row m-3 justify-content-center">
+    <div class="col-md-6">
+        <mat-card *ngIf="!inEdit">
+            <div class="d-flex justify-content-end m-2">
+                <a class="btn btn-sm btn-light" href="/change-password">Change password</a>
+            </div>
+            <mat-card-header>
+                <mat-card-title>{{user.firstName}} {{user.lastName}}</mat-card-title>
+            </mat-card-header>
+            <div class="h-200 text-center mt-4">
+                <img mat-card-image class="img-thumbnail w-100 h-100 mw-300"
+                    src="{{user.profilePicUrl != null ? user.profilePicUrl : 'assets/profile_caption.png'}}"
+                    alt="Profile">
+            </div>
+            <mat-card-content>
+                <mat-list>
+                    <mat-list-item>
+                        <mat-icon matListIcon>email</mat-icon>
+                        <div matLine>{{user.email}}</div>
+                    </mat-list-item>
+                    <mat-list-item *ngIf="user.phoneNumber != null">
+                        <mat-icon matListIcon>phone</mat-icon>
+                        <div matLine>{{user.phoneNumber}}</div>
+                    </mat-list-item>
+                    <mat-list-item *ngIf="user.addressLine1 != null">
+                        <mat-icon matListIcon>place</mat-icon>
+                        <div matLine>{{user.addressLine1}}</div>
+                    </mat-list-item>
+                    <mat-list-item *ngIf="user.addressLine2 != null">
+                        <mat-icon matListIcon>location_city</mat-icon>
+                        <div matLine>{{user.addressLine2}}</div>
+                    </mat-list-item>
+                    <mat-list-item *ngIf="user.country != null">
+                        <mat-icon matListIcon>flag</mat-icon>
+                        <div matLine>{{user.country}}</div>
+                    </mat-list-item>
+                    <mat-list-item *ngIf="user.shortBio != null">
+                        <mat-icon matListIcon>info</mat-icon>
+                        <div matLine>{{user.shortBio}}</div>
+                    </mat-list-item>
+                </mat-list>
+            </mat-card-content>
+            <mat-card-actions>
+                <button class="ms-4" mat-raised-button (click)="inEdit = !inEdit" color="primary">
+                    <mat-icon>{{inEdit ? 'save': 'edit'}}</mat-icon>
+                </button>
+            </mat-card-actions>
+        </mat-card>
+        <div *ngIf="inEdit">
+            <form enctype="multipart/form-data" [formGroup]="form" class="d-flex flex-column m-4">
+                <div class="h-200 text-center">
+                    <img mat-card-image class="img-thumbnail w-100 h-100 mw-300"
+                        src="{{previewPic !== '' ? previewPic : 'assets/profile_caption.png'}}" alt="Profile">
+                </div>
+                <mat-form-field>
+                    <mat-label>Profile Picture</mat-label>
+                    <ngx-mat-file-input formControlName="profilePicture" [disabled]="false" [color]="'primary'"
+                        [multiple]="false" [accept]="imageFormats">
+                    </ngx-mat-file-input>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>First Name</mat-label>
+                    <input matInput formControlName="firstName" required>
+                    <mat-error *ngIf="form.controls.firstName.hasError('required') &&
+                         (form.controls.firstName.dirty || form.controls.firstName.touched)">
+                        First Name is required
+                    </mat-error>
+                    <mat-error *ngIf="form.controls.firstName.hasError('pattern') &&
+                        (form.controls.firstName.dirty || form.controls.firstName.touched)">
+                        First name should contain only letters and max length is 25
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="mt-4">
+                    <mat-label>Last Name</mat-label>
+                    <input matInput formControlName="lastName">
+                </mat-form-field>
+                <mat-form-field class="mt-4">
+                    <mat-label>Address Line 1</mat-label>
+                    <input matInput formControlName="addressLine1">
+                </mat-form-field>
+                <mat-form-field class="mt-4">
+                    <mat-label>Address Line 2</mat-label>
+                    <input matInput formControlName="addressLine2">
+                </mat-form-field>
+                <mat-form-field class="mt-4">
+                    <mat-label>Country</mat-label>
+                    <mat-select formControlName="country">
+                        <mat-option *ngFor="let country of countries" [value]="country.name">
+                            {{country.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field class="mt-4">
+                    <mat-label>Email</mat-label>
+                    <input matInput type="email" formControlName="email">
+                    <mat-error *ngIf="form.controls.email.invalid && (form.controls.email.dirty
+                         || form.controls.email.touched)">Please choose a valid email</mat-error>
+                </mat-form-field>
+                <mat-form-field class="mt-4">
+                    <mat-label>Phone</mat-label>
+                    <input matInput type="text" formControlName="phoneNumber">
+                    <mat-error *ngIf="form.controls.phoneNumber.invalid && (form.controls.phoneNumber.dirty
+                         || form.controls.phoneNumber.touched)">Please choose a valid phone</mat-error>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Short Bio</mat-label>
+                    <textarea matInput formControlName="shortBio"></textarea>
+                </mat-form-field>
+                <ng-container *ngIf="!editSuccess">
+                    <mat-error *ngFor="let errMsg of updateErrors">{{errMsg}}</mat-error>
+                </ng-container>
+                <mat-error *ngIf="editSuccess == false && errorMsg !== ''">{{errorMsg}}</mat-error>
+                <div>
+                    <button [disabled]="!form.dirty" mat-raised-button color="primary" class="mt-4 me-2"
+                        (click)="update()">
+                        <mat-icon>{{editSuccess ? 'check_circle': 'check'}}</mat-icon>
+                    </button>
+                    <button mat-raised-button color="warn" class="mt-4" (click)="clear()">
+                        <mat-icon>cancel</mat-icon>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

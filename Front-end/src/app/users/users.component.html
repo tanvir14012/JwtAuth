@@ -1,0 +1,178 @@
+<div class="row m-3">
+    <div class="d-flex justify-content-end pe-0" *ngIf="!(createMode || editMode)">
+        <button mat-raised-button color='primary' class="my-2 me-2" (click)="createUser()">
+            <mat-icon>add</mat-icon>
+        </button>
+        <button mat-raised-button class="my-2 overflow-hidden text-truncate" [disabled]="users.length < 1" routerLink="/reset-password">Reset password</button>
+    </div>
+    <h1 *ngIf="!loading && users.length < 1">There is no user in the system.</h1>
+    <table *ngIf="!(editMode || createMode) && users.length > 0" mat-table [dataSource]="users" class="mat-elevation-z8 table-responsive">
+
+        <!--- Note that these columns can be defined in any order.
+                  The actual rendered columns are set as a property on the row definition" -->
+
+        <!-- Picture Column -->
+        <ng-container matColumnDef="profilePicUrl">
+            <th mat-header-cell *matHeaderCellDef class="ps-2"> Profile </th>
+            <td mat-cell *matCellDef="let element" class="ps-2">
+                <img class="img-thumbnail my-2" src="{{element.profilePicUrl}}" alt=" " width="50" height="50">
+            </td>
+        </ng-container>
+
+        <!-- First name Column -->
+        <ng-container matColumnDef="firstName">
+            <th mat-header-cell *matHeaderCellDef class="ps-2"> First Name </th>
+            <td mat-cell *matCellDef="let element" class="ps-2"> {{element.firstName}} </td>
+        </ng-container>
+
+        <!-- Last name Column -->
+        <ng-container matColumnDef="lastName">
+            <th mat-header-cell *matHeaderCellDef class="ps-2"> Last Name </th>
+            <td mat-cell *matCellDef="let element" class="ps-2"> {{element.lastName}} </td>
+        </ng-container>
+
+        <!-- Email Column -->
+        <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef class="ps-2"> Email </th>
+            <td mat-cell *matCellDef="let element" class="ps-2"> {{element.email}} </td>
+        </ng-container>
+
+        <!-- Phone Column -->
+        <ng-container matColumnDef="phoneNumber">
+            <th mat-header-cell *matHeaderCellDef class="ps-2 d-none d-md-table-cell"> Phone </th>
+            <td mat-cell *matCellDef="let element" class="ps-2 d-none d-md-table-cell"> {{element.phoneNumber}} </td>
+        </ng-container>
+
+        <!-- Address1 Column -->
+        <ng-container matColumnDef="addressLine1">
+            <th mat-header-cell *matHeaderCellDef class="ps-2 d-none d-lg-table-cell"> Address Line 1</th>
+            <td mat-cell *matCellDef="let element" class="ps-2 d-none d-lg-table-cell"> {{element.addressLine1}} </td>
+        </ng-container>
+
+        <!-- Address2 Column -->
+        <ng-container matColumnDef="addressLine2">
+            <th mat-header-cell *matHeaderCellDef class="ps-2 d-none d-lg-table-cell"> Address Line 2 </th>
+            <td mat-cell *matCellDef="let element" class="ps-2 d-none d-lg-table-cell"> {{element.addressLine2}} </td>
+        </ng-container>
+
+        <!-- Country Column -->
+        <ng-container matColumnDef="country">
+            <th mat-header-cell *matHeaderCellDef class="ps-2 d-none d-lg-table-cell"> Country </th>
+            <td mat-cell *matCellDef="let element" class="ps-2 d-none d-lg-table-cell"> {{element.country}} </td>
+        </ng-container>
+
+        <!-- Short bio Column -->
+        <ng-container matColumnDef="shortBio">
+            <th mat-header-cell *matHeaderCellDef class="ps-2 d-none d-lg-table-cell"> Short Bio </th>
+            <td mat-cell *matCellDef="let element" matTooltip="{{element.shortBio}}"
+                class="ps-2 d-none d-lg-table-cell">
+                {{element.shortBio?.substr(0, 10).concat("..")}} </td>
+        </ng-container>
+
+        <!-- Action Column -->
+        <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef class="ps-2">Action </th>
+            <td mat-cell *matCellDef="let element" class="ps-2">
+                <button mat-icon-button color='primary' class="mr-2" (click)=editUser(element.id)>
+                    <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color='warn' (click)=deleteUser(element.id)>
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </td>
+        </ng-container>
+
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+</div>
+<div class="row m-2 justify-content-center" *ngIf="editMode || createMode">
+    <div class="col-md-6">
+        <form enctype="multipart/form-data" [formGroup]="form" class="d-flex flex-column m-4">
+            <div class="mw-300 h-200 text-center">
+                <img mat-card-image class="img-thumbnail w-100 h-100"
+                    src="{{previewPic !== null ? previewPic: 'assets/profile_caption.png'}}" alt="Profile">
+            </div>
+            <mat-form-field>
+                <mat-label>Profile Picture</mat-label>
+                <ngx-mat-file-input formControlName="profilePicture" [disabled]="false" [color]="'primary'"
+                    [multiple]="false" [accept]="imageFormats">
+                </ngx-mat-file-input>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>First Name</mat-label>
+                <input matInput formControlName="firstName" required>
+                <mat-error *ngIf="form.controls.firstName.hasError('required') &&
+                         (form.controls.firstName.dirty || form.controls.firstName.touched)">
+                    First Name is required
+                </mat-error>
+                <mat-error *ngIf="form.controls.firstName.hasError('pattern') &&
+                        (form.controls.firstName.dirty || form.controls.firstName.touched)">
+                    First name should contain only letters and max length is 25
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="mt-4">
+                <mat-label>Last Name</mat-label>
+                <input matInput formControlName="lastName">
+            </mat-form-field>
+            <mat-form-field class="mt-4">
+                <mat-label>Address Line 1</mat-label>
+                <input matInput formControlName="addressLine1">
+            </mat-form-field>
+            <mat-form-field class="mt-4">
+                <mat-label>Address Line 2</mat-label>
+                <input matInput formControlName="addressLine2">
+            </mat-form-field>
+            <mat-form-field class="mt-4">
+                <mat-label>Country</mat-label>
+                <mat-select formControlName="country">
+                    <mat-option *ngFor="let country of countries" [value]="country.name">
+                        {{country.name}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field class="mt-4">
+                <mat-label>Email</mat-label>
+                <input matInput type="email" formControlName="email">
+                <mat-error *ngIf="form.controls.email.invalid && (form.controls.email.dirty
+                         || form.controls.email.touched)">Please choose a valid email</mat-error>
+            </mat-form-field>
+            <mat-form-field class="mt-4">
+                <mat-label>Phone</mat-label>
+                <input matInput type="text" formControlName="phoneNumber">
+                <mat-error *ngIf="form.controls.phoneNumber.invalid && (form.controls.phoneNumber.dirty
+                         || form.controls.phoneNumber.touched)">Please choose a valid phone</mat-error>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Short Bio</mat-label>
+                <textarea matInput formControlName="shortBio"></textarea>
+            </mat-form-field>
+            <ng-container *ngIf="!editSuccess">
+                <mat-error *ngFor="let errMsg of updateErrors">{{errMsg}}</mat-error>
+            </ng-container>
+            <ng-container *ngIf="!createSuccess">
+                <mat-error *ngFor="let errMsg of createErrors">{{errMsg}}</mat-error>
+            </ng-container>
+            <mat-error *ngIf="(editSuccess == false || createSuccess == false) && errorMsg !== ''">{{errorMsg}}
+            </mat-error>
+            <mat-hint *ngIf="createMode">The default password for the user without quote is: 'User@123'</mat-hint>
+            <div *ngIf="createMode">
+                <button [disabled]="!form.dirty" mat-raised-button color="primary" class="mt-4 me-2" (click)="create()">
+                    <mat-icon>{{createSuccess ? 'save_circle': 'save'}}</mat-icon>
+                </button>
+                <button mat-raised-button color="warn" class="mt-4" (click)="clear()">
+                    <mat-icon>cancel</mat-icon>
+                </button>
+            </div>
+            <div *ngIf="editMode">
+                <button [disabled]="!form.dirty" mat-raised-button color="primary" class="mt-4 me-2" (click)="update()">
+                    <mat-icon>{{editSuccess ? 'check_circle': 'check'}}</mat-icon>
+                </button>
+                <button mat-raised-button color="warn" class="mt-4" (click)="clear()">
+                    <mat-icon>cancel</mat-icon>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
