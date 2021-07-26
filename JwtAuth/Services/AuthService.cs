@@ -195,5 +195,37 @@ namespace JwtAuth.Services
                 return false;
             }
         }
+
+
+        public bool ValidateJwtToken(string token)
+        {
+            try
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.ASCII.GetBytes(configuration["jwt:Secret"]);
+
+                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = true,
+                    ValidIssuer = configuration["Jwt:Issuer"],
+                    ValidateAudience = true,
+                    ValidAudience = configuration["Jwt:Audience"],
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                }, out SecurityToken validatedToken) ;
+
+                var jwtToken = (JwtSecurityToken)validatedToken;
+
+                // return truefrom JWT token if validation successful
+                return true;
+            }
+            catch(Exception ex)
+            {
+                // return false if validation fails
+                return false;
+            }
+        }
     }
 }

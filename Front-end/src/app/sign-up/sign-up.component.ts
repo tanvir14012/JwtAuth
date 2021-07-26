@@ -1,6 +1,6 @@
 import { AuthService } from './../http/auth/auth-service';
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, NgForm, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { PasswordCheckErrorMatcher } from './password-error-matcher.';
 import { Router } from '@angular/router';
@@ -12,6 +12,7 @@ import { takeUntil } from 'rxjs/operators';
   styleUrls: ['./sign-up.component.css']
 })
 export class SignUpComponent implements OnInit, OnDestroy {
+  @ViewChild('signUpNgForm') signUpNgForm: NgForm;
   form: FormGroup;
   passwordCheck: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
     let password = control.get("password")?.value,
@@ -30,7 +31,13 @@ export class SignUpComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private router: Router) 
     {
-    this.form = fb.group({
+      this.passwordErrorMatcher = new PasswordCheckErrorMatcher();
+    }
+ 
+
+  ngOnInit(): void {
+
+    this.form = this.fb.group({
       firstName: ['', [Validators.required, Validators.pattern("^[a-zA-Z]{1,25}$")]],
       lastName: ['', [Validators.pattern("^[a-zA-Z]{1,25}$")]],
       email: ['', [Validators.required, Validators.email, Validators.maxLength(256)]],
@@ -39,14 +46,12 @@ export class SignUpComponent implements OnInit, OnDestroy {
     }, {
       validators: this.passwordCheck
     });
-    this.passwordErrorMatcher = new PasswordCheckErrorMatcher();
+  
   }
+
   ngOnDestroy(): void {
     this.lifeEnd$.next(true);
     this.lifeEnd$.complete();
-  }
-
-  ngOnInit(): void {
   }
 
   onSubmit() {

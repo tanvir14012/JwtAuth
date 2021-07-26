@@ -4,10 +4,10 @@ import { UserModel } from './userModel';
 import { AuthService } from './../http/auth/auth-service';
 import { of, pipe, Subject } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { catchError, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-profile',
@@ -15,7 +15,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit, OnDestroy {
-
+  @ViewChild('profileNgForm') profileNgForm: NgForm;
   isAdmin: boolean = false;
   lifeEnd$: Subject<any> = new Subject();
   user: UserModel = new UserModel();
@@ -35,7 +35,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
     private fb: FormBuilder
     ) 
   { 
-    this.form = fb.group({
+    
+  }
+
+  ngOnInit(): void {
+
+    this.form = this.fb.group({
       firstName: ['', [Validators.required, Validators.pattern("^[a-zA-Z]{1,25}$")]],
       lastName: ['', [Validators.pattern("^[a-zA-Z]{1,25}$")]],
       email: ['', [Validators.required, Validators.email, Validators.maxLength(256)]],
@@ -46,9 +51,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
       country: ['', [Validators.maxLength(50)]],
       shortBio: ['', [Validators.maxLength(1000)]]
     });
-  }
-
-  ngOnInit(): void {
 
     /**
      * Populates user

@@ -1,9 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { of, BehaviorSubject } from 'rxjs';
+import { of, BehaviorSubject, Observable } from 'rxjs';
 import { ReplaySubject } from 'rxjs';
-import { Observable } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { catchError, delay, map, retryWhen, scan, switchMap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { JwtUtils } from './jwt-utils';
 
@@ -35,7 +34,6 @@ export class AuthService {
                               localStorage.setItem("accessToken", response.body.tokenString);
                               this.isAuthenticated$.next(true);
                               this.isAdmin$.next(false);
-                              localStorage.setItem("adminStatus", "false");
                           }
                           return of(response.body);
                        })
@@ -89,7 +87,6 @@ export class AuthService {
          localStorage.removeItem("accessToken");
          this.isAuthenticated$.next(false);
          this.isAdmin$.next(false);
-         localStorage.removeItem("adminStatus");
          return of(true);
     }
 
@@ -117,7 +114,6 @@ export class AuthService {
                     localStorage.removeItem("accessToken");
                     this.isAuthenticated$.next(false);
                     this.isAdmin$.next(false);
-                    localStorage.removeItem("adminStatus");
                     return of(false);
                 }),
                 switchMap((response: any) => {
@@ -132,10 +128,55 @@ export class AuthService {
                     }
                     this.isAuthenticated$.next(false);
                     this.isAdmin$.next(false);
-                    localStorage.setItem("adminStatus", "false");
                     return of(false);
                 })
             );
+    }
+
+    /**
+     * 
+     * Checks if the access token is valid
+     */
+    private validateAccessToken(tokenString: string): Observable<boolean> {
+        const httpOptions:any = {
+            headers: new HttpHeaders({
+                "Content-Type": "application/json"
+            })
+        };
+
+        return this.httpClient.post(`${environment.API_ROOT}/account/validateAccessToken`, JSON.stringify(tokenString), httpOptions)
+        .pipe(
+            retryWhen((error: Observable<any>) => {
+                return error.pipe(
+                    scan((count) => {
+                        count++;
+                        if(count <3) {
+                            return count;
+                        }
+                        else {
+                            throw error;
+                        }
+                    }, 0),
+                    delay(1000)
+                )
+            }),
+            catchError(err => {
+                return of(false);
+            }),
+            switchMap((response: any) => {
+                if(response) {
+                    this.isAuthenticated$.next(true);
+
+                    //Checks the admin status as well
+                    return this.isAdmin().pipe(
+                        map(v => true)
+                    );
+                }
+                this.isAuthenticated$.next(false);
+                this.isAdmin$.next(false);
+                return of(false);
+            })
+        );
     }
 
     /**
@@ -147,17 +188,13 @@ export class AuthService {
         if(!accessToken) {
             this.isAuthenticated$.next(false);
             this.isAdmin$.next(false);
-            localStorage.setItem("adminStatus", "false");
             return of(false);
         }
 
         try {
             let expired = JwtUtils.isTokenExpired(accessToken);
             if(!expired) {
-                this.isAuthenticated$.next(true);
-                const adminStatus = localStorage.getItem("adminStatus");
-                this.isAdmin$.next(adminStatus === "true");
-                return of(true);
+                return this.validateAccessToken(accessToken);
             }
             return this.refreshUserTokens();
             
@@ -166,7 +203,6 @@ export class AuthService {
             localStorage.removeItem("accessToken");
             this.isAuthenticated$.next(false);
             this.isAdmin$.next(false);
-            localStorage.setItem("adminStatus", "false");
             return of(false);
         }
         

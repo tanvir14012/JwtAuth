@@ -1,8 +1,8 @@
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PasswordChangeErrorMatcher } from './../password-change-error-mathcer';
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, NgForm, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -15,6 +15,7 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./change-password.component.css']
 })
 export class ChangePasswordComponent implements OnInit {
+  @ViewChild('changePassNgForm') changePassNgForm: NgForm;
   form: FormGroup;
   passwordCheck: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
     let password = control.get("password")?.value,
@@ -34,47 +35,49 @@ export class ChangePasswordComponent implements OnInit {
   changeSuccess = true;
   errorMsg: string = "";
   lifeEnd$: Subject<boolean> = new Subject();
-  
+
   constructor(
     private fb: FormBuilder,
     private httpClient: HttpClient,
     private snackBar: MatSnackBar,
-    private router: Router) 
-    {
-    this.form = fb.group({
+    private router: Router) {
+    this.passwordErrorMatcher = new PasswordCheckErrorMatcher();
+    this.oldNewPasswordErrorMatcher = new PasswordChangeErrorMatcher();
+
+  }
+
+  ngOnInit(): void {
+    this.form = this.fb.group({
       oldPassword: ['', [Validators.required, Validators.pattern("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\da-zA-Z]).{6,64}$")]],
       password: ['', [Validators.required, Validators.pattern("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\da-zA-Z]).{6,64}$")]],
       confirmPassword: ['', [Validators.required, Validators.pattern("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\da-zA-Z]).{6,64}$")]]
     }, {
       validators: [this.passwordCheck, this.oldNewpasswordCheck]
     });
-    this.passwordErrorMatcher = new PasswordCheckErrorMatcher();
-    this.oldNewPasswordErrorMatcher = new PasswordChangeErrorMatcher();
+
   }
+
   ngOnDestroy(): void {
     this.lifeEnd$.next(true);
     this.lifeEnd$.complete();
   }
 
-  ngOnInit(): void {
-  }
-
   onSubmit() {
-    if(this.form.valid) {
+    if (this.form.valid) {
       this.httpClient.post(`${environment.API_ROOT}/account/changePassword`, {
         oldPassword: this.form.get("oldPassword")?.value,
         newPassword: this.form.get("password")?.value
       }).pipe(
         takeUntil(this.lifeEnd$)
-      ).subscribe((response:any) => {
-        if(!response) {
+      ).subscribe((response: any) => {
+        if (!response) {
           this.changeSuccess = false;
           this.errorMsg = "Password change failed. The given old password is incorrect";
         } else {
           this.router.navigate(["/profile"]);
           this.snackBar.open("Password has been changed successfully", undefined, {
             duration: 2500
-          } );
+          });
         }
       });
     }

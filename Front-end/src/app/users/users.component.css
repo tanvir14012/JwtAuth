@@ -22,6 +22,10 @@
     z-index: 100;
 }
 
-table th, td {
+table td {
     word-break: break-all;
+}
+
+th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:last-of-type {
+    padding-right: 0;
 }

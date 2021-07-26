@@ -1,6 +1,6 @@
 import { AuthService } from './../http/auth/auth-service';
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { of, Subject, Subscription } from 'rxjs';
 import { catchError, takeUntil } from 'rxjs/operators';
@@ -11,6 +11,7 @@ import { catchError, takeUntil } from 'rxjs/operators';
   styleUrls: ['./sign-in.component.css']
 })
 export class SignInComponent implements OnInit, OnDestroy {
+  @ViewChild('signInNgForm') signInNgForm: NgForm;
   form: FormGroup;
   passHide: boolean = true;
   attemptFailed: boolean = false;
@@ -22,18 +23,19 @@ export class SignInComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private router: Router) 
     {
-    this.form = fb.group({
+    
+    }
+
+  ngOnInit(): void {
+    this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email, Validators.maxLength(256)]],
       password: ['', [Validators.required, Validators.pattern("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\da-zA-Z]).{6,64}$")]]
     });
-   }
+  }
 
   ngOnDestroy(): void {
     this.lifeEnd$.next(true);
     this.lifeEnd$.complete();
-  }
-
-  ngOnInit(): void {
   }
 
   onSubmit() {

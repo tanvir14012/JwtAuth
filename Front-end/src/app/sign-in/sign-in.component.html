@@ -3,7 +3,7 @@
         <div class="row justify-content-center m-2">
             <div class="col-sm-12 col-md-8 col-lg-6 bg-white rounded">
                 <h1 class="text-center mt-4">Sign in</h1>
-                <form [formGroup]="form" class="d-flex flex-column m-4">
+                <form [formGroup]="form" class="d-flex flex-column m-4" #signInNgForm="ngForm">
                     <mat-form-field>
                         <mat-label>Email</mat-label>
                         <input matInput type="email" formControlName="email" required>

@@ -6,7 +6,7 @@ import { Subject } from 'rxjs';
 import { catchError, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { countries, Country } from '../shared/country-list';
 import { UserModel } from '../profile/userModel';
 import { MatDialog } from '@angular/material/dialog';
@@ -20,6 +20,7 @@ import { of } from 'rxjs';
   styleUrls: ['./users.component.css']
 })
 export class UsersComponent implements OnInit {
+  @ViewChild('usersNgForm') usersUpNgForm: NgForm;
   @ViewChild(MatTable) table!: MatTable<UserModel>;
   displayedColumns:string[] = [ "profilePicUrl", "firstName", "lastName", "email", "phoneNumber", "addressLine1", 
    "addressLine2", "country", "shortBio", "action"];
@@ -36,7 +37,7 @@ export class UsersComponent implements OnInit {
   imageFormats: string = ".jpg, .jpeg, .png, .tiff, .gif";
   previewPic: string = '';
   countries: Country[] = countries;
-  user: UserModel;
+  user: UserModel = new UserModel();
   selectedUserId: string = '';
   loading: boolean = true;
 
@@ -50,8 +51,12 @@ export class UsersComponent implements OnInit {
     private changeDetectorRef: ChangeDetectorRef
   ) 
   { 
-    this.user = new UserModel();
-    this.form = fb.group({
+    
+  }
+
+  ngOnInit(): void {
+
+    this.form = this.fb.group({
       firstName: ['', [Validators.required, Validators.pattern("^[a-zA-Z]{1,25}$")]],
       lastName: ['', [Validators.pattern("^[a-zA-Z]{1,25}$")]],
       email: ['', [Validators.required, Validators.email, Validators.maxLength(256)]],
@@ -64,9 +69,6 @@ export class UsersComponent implements OnInit {
       country: ['', [Validators.maxLength(50)]],
       shortBio: ['', [Validators.maxLength(1000)]]
     });
-  }
-
-  ngOnInit(): void {
 
     /**
      * Get the list of user
@@ -100,6 +102,11 @@ export class UsersComponent implements OnInit {
        
      });
 
+  }
+
+  ngOnDestroy(): void {
+    this.lifeEnd$.next(true);
+    this.lifeEnd$.complete();
   }
 
   editUser(id: string): void {
@@ -289,11 +296,6 @@ export class UsersComponent implements OnInit {
     this.createErrors = [];
     this.updateErrors = [];
     this.errorMsg = "";
-  }
-
-  ngOnDestroy(): void {
-    this.lifeEnd$.next(true);
-    this.lifeEnd$.complete();
   }
 
 }

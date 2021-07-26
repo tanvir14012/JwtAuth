@@ -262,6 +262,14 @@ namespace JwtAuth.Controllers
 
         }
 
+        [AllowAnonymous]
+        [HttpPost]
+        public IActionResult ValidateAccessToken([FromBody] string token)
+        {
+            var result = authService.ValidateJwtToken(token);
+            return Ok(result);
+        }
+
         private CookieOptions GetCookieOptions()
         {
             var cookieOps = new CookieOptions

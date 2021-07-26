@@ -47,7 +47,7 @@
             </mat-card-actions>
         </mat-card>
         <div *ngIf="inEdit">
-            <form enctype="multipart/form-data" [formGroup]="form" class="d-flex flex-column m-4">
+            <form enctype="multipart/form-data" [formGroup]="form" class="d-flex flex-column m-4" #profileNgForm="ngForm">
                 <div class="h-200 text-center">
                     <img mat-card-image class="img-thumbnail w-100 h-100 mw-300"
                         src="{{previewPic !== '' ? previewPic : 'assets/profile_caption.png'}}" alt="Profile">

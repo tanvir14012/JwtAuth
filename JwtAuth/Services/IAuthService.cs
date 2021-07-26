@@ -14,5 +14,6 @@ namespace JwtAuth.Services
         Task<AuthTokens> GenerateAuthTokens(string userId, HttpRequestInfo requestInfo);
         Task<AuthTokens> Refresh(string refreshToken, HttpRequestInfo requestInfo);
         Task<bool> RevokeRefreshToken(string token, string userId, HttpRequestInfo requestInfo);
+        bool ValidateJwtToken(string token);
     }
 }

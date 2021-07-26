@@ -2,8 +2,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserModel } from './../../profile/userModel';
 import { PasswordCheckErrorMatcher } from './../../sign-up/password-error-matcher.';
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, NgForm, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -15,6 +15,7 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./reset-password.component.css']
 })
 export class ResetPasswordComponent implements OnInit {
+  @ViewChild('resetPassNgForm') resetPassNgForm: NgForm;
   form: FormGroup;
   users: UserModel[] = [];
   passwordCheck: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
@@ -39,7 +40,13 @@ export class ResetPasswordComponent implements OnInit {
     private httpClient: HttpClient,
     private snackBar: MatSnackBar,
     private router: Router) {
-    this.form = fb.group({
+    
+  }
+
+
+  ngOnInit(): void {
+
+    this.form = this.fb.group({
       userId: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.pattern("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\da-zA-Z]).{6,64}$")]],
       confirmPassword: ['', [Validators.required, Validators.pattern("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\da-zA-Z]).{6,64}$")]]
@@ -47,10 +54,6 @@ export class ResetPasswordComponent implements OnInit {
       validators: this.passwordCheck
     });
     this.passwordErrorMatcher = new PasswordCheckErrorMatcher();
-  }
-
-
-  ngOnInit(): void {
 
     /**
     * Get the list of user

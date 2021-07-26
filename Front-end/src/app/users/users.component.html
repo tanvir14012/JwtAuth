@@ -89,9 +89,9 @@
 </div>
 <div class="row m-2 justify-content-center" *ngIf="editMode || createMode">
     <div class="col-md-6">
-        <form enctype="multipart/form-data" [formGroup]="form" class="d-flex flex-column m-4">
-            <div class="mw-300 h-200 text-center">
-                <img mat-card-image class="img-thumbnail w-100 h-100"
+        <form enctype="multipart/form-data" [formGroup]="form" class="d-flex flex-column m-4" #usersNgForm="ngForm">
+            <div class="h-200 text-center">
+                <img mat-card-image class="img-thumbnail w-100 h-100 mw-300"
                     src="{{previewPic !== null ? previewPic: 'assets/profile_caption.png'}}" alt="Profile">
             </div>
             <mat-form-field>
