@@ -8,24 +8,18 @@ namespace JwtAuth.Models.DTO
 {
     public class AuthTokens
     {
-        public string AccessToken { get; set; }
-        public RefreshTokenDb RefreshToken { get; set; }
+        public string AccessTokenDTO { get; set; }
+        public RefreshTokenDTO RefreshToken { get; set; }
+        public bool RequiresSignOut { get; set; }
+        public string BrowserIdentifier { get; set; }
     }
 
-    public class RefreshToken
+    public class RefreshTokenDTO
     {
         public string TokenString { get; set; }
     }
 
-    public class RefreshTokenRevokeInfo
-    {
-        public string RevokedBy { get; set; }
-        public string RevokeReason { get; set; }
-        public string RevokedByIp { get; set; }
-        public string RevokedByDevice { get; set; }
-    }
-
-    public class AccessToken
+    public class AccessTokenDTO
     {
         public string TokenString { get; set; }
     }

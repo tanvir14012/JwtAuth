@@ -6,7 +6,7 @@
         <button mat-raised-button class="my-2 overflow-hidden text-truncate" [disabled]="users.length < 1" routerLink="/reset-password">Reset password</button>
     </div>
     <h1 *ngIf="!loading && users.length < 1">There is no user in the system.</h1>
-    <table *ngIf="!(editMode || createMode) && users.length > 0" mat-table [dataSource]="users" class="mat-elevation-z8 table-responsive">
+    <table *ngIf="!(editMode || createMode) && users.length > 0" mat-table [dataSource]="users" class="mat-elevation-z8 table-responsive mt-3">
 
         <!--- Note that these columns can be defined in any order.
                   The actual rendered columns are set as a property on the row definition" -->

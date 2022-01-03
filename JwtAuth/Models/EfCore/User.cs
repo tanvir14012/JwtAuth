@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace JwtAuth.Models.EfCore
 {
-    public class User: IdentityUser
+    public class User: IdentityUser<int>
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -16,5 +16,6 @@ namespace JwtAuth.Models.EfCore
         public string Country { get; set; }
         public string ProfilePicUrl { get; set; }
         public string ShortBio { get; set; }
+        public bool SessionLockEnabled { get; set; }
     }
 }

@@ -15,7 +15,7 @@ export class SignInComponent implements OnInit, OnDestroy {
   form: FormGroup;
   passHide: boolean = true;
   attemptFailed: boolean = false;
-  serverError: boolean = false;
+  errorMsg: string = '';
   lifeEnd$: Subject<boolean> = new Subject();
 
   constructor(
@@ -28,8 +28,9 @@ export class SignInComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      email: ['', [Validators.required, Validators.email, Validators.maxLength(256)]],
-      password: ['', [Validators.required, Validators.pattern("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\da-zA-Z]).{6,64}$")]]
+      email: ['', [Validators.required, Validators.email, Validators.maxLength(255)]],
+      password: ['', [Validators.required, Validators.pattern("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\da-zA-Z]).{6,64}$")]],
+      rememberMe:[false, [Validators.required]]
     });
   }
 
@@ -43,15 +44,17 @@ export class SignInComponent implements OnInit, OnDestroy {
       this.authService.signIn(this.form.value).pipe(
         takeUntil(this.lifeEnd$),
         catchError(err => {
-          this.serverError = true;
+          this.attemptFailed = true;
+          this.errorMsg = "Signin failed";
           return of(err);
         })
-      ).subscribe((response) => {
-        if(response.tokenString) {
+      ).subscribe((result) => {
+        if(result.succeeded) {
           this.router.navigate(["/home"]);
         }
         else {
-          this.attemptFailed = !this.serverError;
+          this.attemptFailed = true;
+          this.errorMsg = result.errorMessage;
         }
       });
     }

@@ -7,9 +7,8 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { TransferModule } from './http/transfer.module';
+import { AppHttpModule } from './http/app-http.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ConfirmationDialogComponent } from './shared/confirmation-dialog/confirmation-dialog.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +17,7 @@ import { ConfirmationDialogComponent } from './shared/confirmation-dialog/confir
   imports: [
     BrowserModule,
     AppRoutingModule,
-    TransferModule,
+    AppHttpModule,
     BrowserAnimationsModule,
     MatToolbarModule,
     MatIconModule,

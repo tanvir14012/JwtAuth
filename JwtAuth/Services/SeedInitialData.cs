@@ -13,30 +13,38 @@ namespace JwtAuth.Services
     {
         public static async Task SeedAdminData(IServiceProvider serviceProvider, IConfiguration configuration)
         {
-            var userManager = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<UserManager<User>>();
-            var claims = configuration.GetSection("InitialDbSeed:Admin:Claims").Get<string[]>();
-            var adminEmail = configuration["InitialDbSeed:Admin:Email"];
-            var adminUser = await userManager.FindByEmailAsync(adminEmail);
-            if (adminUser == null)
+            try
             {
-                var admin = new User
+                var userManager = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<UserManager<User>>();
+                var claims = configuration.GetSection("InitialDbSeed:Admin:Claims").Get<string[]>();
+                var adminEmail = configuration["InitialDbSeed:Admin:Email"];
+                var adminUser = await userManager.FindByEmailAsync(adminEmail);
+                if (adminUser == null)
                 {
-                    UserName = configuration["InitialDbSeed:Admin:Email"],
-                    Email = configuration["InitialDbSeed:Admin:Email"]
-                };
-                var result = await userManager.CreateAsync(admin, configuration["InitialDbSeed:Admin:Password"]);
-                if(result.Succeeded)
-                {
-                    await userManager.AddClaimAsync(admin, new Claim(ClaimTypes.NameIdentifier, admin.Id));
-                    if(claims != null)
+                    var admin = new User
                     {
-                        foreach(var claim in claims)
+                        UserName = configuration["InitialDbSeed:Admin:Email"],
+                        Email = configuration["InitialDbSeed:Admin:Email"],
+                        FirstName = configuration["InitialDbSeed:Admin:FirstName"],
+                        LastName = configuration["InitialDbSeed:Admin:LastName"],
+                        SessionLockEnabled = true
+                    };
+                    var result = await userManager.CreateAsync(admin, configuration["InitialDbSeed:Admin:Password"]);
+                    if (result.Succeeded)
+                    {
+                        await userManager.AddClaimAsync(admin, new Claim(ClaimTypes.NameIdentifier, admin.Id.ToString()));
+                        if (claims != null)
                         {
-                            await userManager.AddClaimAsync(admin, new Claim(claim.Split(":")[0], claim.Split(":")[1]));
+                            foreach (var claim in claims)
+                            {
+                                await userManager.AddClaimAsync(admin, new Claim(claim.Split(":")[0], claim.Split(":")[1]));
+                            }
                         }
                     }
                 }
             }
+            catch { }
+
         }
     }
 }

@@ -6,7 +6,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, NgForm, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -40,7 +40,7 @@ export class ResetPasswordComponent implements OnInit {
     private httpClient: HttpClient,
     private snackBar: MatSnackBar,
     private router: Router) {
-    
+
   }
 
 
@@ -62,7 +62,10 @@ export class ResetPasswordComponent implements OnInit {
       .pipe(
         takeUntil(this.lifeEnd$)
       ).subscribe((userList: any) => {
-        this.users = userList;
+        this.users = userList.map((user: any) => { 
+          user.id = user.id.toString();
+           return user; 
+        });
       });
   }
 
@@ -81,7 +84,7 @@ export class ResetPasswordComponent implements OnInit {
           this.router.navigate(["/users"]);
           this.snackBar.open("Password has been reset successfully", undefined, {
             duration: 2500
-          } );
+          });
         }
       });
     }

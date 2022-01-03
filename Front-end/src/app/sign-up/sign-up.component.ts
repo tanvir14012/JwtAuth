@@ -58,13 +58,17 @@ export class SignUpComponent implements OnInit, OnDestroy {
     if(this.form.valid) {
       this.authService.signUp(this.form.value).pipe(
         takeUntil(this.lifeEnd$)
-      ).subscribe((response) => {
-        if(response.err) {
+      ).subscribe((result) => {
+        if(!result.succeeded) {
           this.signUpSuccess = false;
-          this.errorMsg = response.err;
+          this.errorMsg = result.errorMessage;
         } else {
           this.router.navigate(["/home"]);
         }
+      },
+      (err) => {
+        this.signUpSuccess = false;
+        this.errorMsg = "The sign up request failed. Please try again.";
       });
     }
   }

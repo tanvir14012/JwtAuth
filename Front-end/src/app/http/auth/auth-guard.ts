@@ -4,6 +4,7 @@ import { Observable } from "rxjs";
 import { Injectable } from '@angular/core';
 import { AuthService } from "./auth-service";
 import { of } from 'rxjs';
+import { AuthStatus, SignInStatus } from './auth-types';
 
 @Injectable({
     providedIn: 'root'
@@ -16,23 +17,28 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad{
 
     }
 
-    private checkAuthentication(redirectUrl: string): Observable<boolean> {
-        return this.authService.isAuthenticated$.pipe(
-            switchMap((authenticated: boolean) => {
-                if(!authenticated) {
-                    return this.router.navigate([redirectUrl]);
-                }
-                return of(true);
-            })
-        );
+    private checkAuthentication(): Observable<boolean> {
+         // Check the authentication status
+         return this.authService.checkAuthStatus()
+         .pipe(
+             switchMap((authStatus: AuthStatus) => {
+                 switch(authStatus.signInStatus ) {
+                      case SignInStatus.Authenticated: 
+                        return of(true);
+                      default:
+                        this.router.navigate(['sign-in']);
+                        return of(false);                                   
+                 }
+             })
+         );
     }
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
-        return this.checkAuthentication("/sign-in");
+        return this.checkAuthentication();
     }
     canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
-        return this.checkAuthentication("/sign-in");
+        return this.checkAuthentication();
     }
     canLoad(route: Route, segments: UrlSegment[]): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
-        return this.checkAuthentication("/sign-in");
+        return this.checkAuthentication();
     }
 }

@@ -59,7 +59,6 @@ namespace JwtAuth.Services
                 user.ProfilePicUrl = "data:image/png;base64," + Convert.ToBase64String(bytes);
             }
 
-            userEntity.Id = Guid.NewGuid().ToString();
             userEntity.UserName = user.Email;
 
 
@@ -92,7 +91,7 @@ namespace JwtAuth.Services
             return result.Succeeded;
         }
 
-        public async Task<UserDTO> Get(string id)
+        public async Task<UserDTO> Get(int id)
         {
             var user = await dbContext.Users.AsNoTracking()
                     .FirstOrDefaultAsync(user => user.Id == id);

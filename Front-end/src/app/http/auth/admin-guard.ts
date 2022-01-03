@@ -1,3 +1,4 @@
+import { AuthStatus, SignInStatus, UserType } from './auth-types';
 import { switchMap } from 'rxjs/operators';
 import { ActivatedRouteSnapshot, CanActivate, CanActivateChild, CanLoad, Route, Router, RouterStateSnapshot, UrlSegment, UrlTree } from "@angular/router";
 import { Observable } from "rxjs";
@@ -17,12 +18,14 @@ export class AdminGuard implements CanActivate, CanActivateChild, CanLoad{
     }
 
     private checkAdminRole(): Observable<boolean> {
-        return this.authService.isAdmin$.pipe(
-            switchMap((isAdmin:boolean) => {
-                if(!isAdmin) {
-                    return this.router.navigate(["home"]);
+        return this.authService.checkAuthStatus().pipe(
+            switchMap((authStatus: AuthStatus) => {
+                if(authStatus.signInStatus == SignInStatus.Authenticated 
+                    && authStatus.userType.toString() == '0') {
+                    return of(true);
                 }
-                return of(true);
+                this.router.navigate[''];
+                return of(false);
             })
         );
                 

@@ -1,19 +1,15 @@
-﻿using JwtAuth.Models;
-using JwtAuth.Models.DTO;
+﻿using JwtAuth.Models.DTO;
 using JwtAuth.Models.EfCore;
-using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace JwtAuth.Services
 {
     public interface IAuthService
     {
-        Task<AuthTokens> GenerateAuthTokens(string userId, HttpRequestInfo requestInfo);
-        Task<AuthTokens> Refresh(string refreshToken, HttpRequestInfo requestInfo);
-        Task<bool> RevokeRefreshToken(string token, string userId, HttpRequestInfo requestInfo);
-        bool ValidateJwtToken(string token);
+        Task<AuthTokens> GenerateAuthTokens(User user, bool rememberMe, HttpRequestInfo requestInfo);
+        Task<TokenRefreshResult> Refresh(string refreshToken, string browserIdentifier, HttpRequestInfo requestInfo);
+        Task<bool> RevokeRefreshToken(string token, int userId, HttpRequestInfo requestInfo);
+        Task<LockSessionResult> LockSession(int userId, string refreshToken, string browserIdentifier);
+        Task<UnlockSessionResult> UnlockSession(int userId, string refreshToken, string browserIdentifier);
     }
 }

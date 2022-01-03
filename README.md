@@ -1,5 +1,5 @@
 # JwtAuth
-A CRUD app that demonstrates JWT based authentication and authorization in .NET 5 WEB API and Angular 12. 
+A Single Page App that demonstrates JWT based authentication and authorization in .NET 5 WEB API and Angular 12. 
 ###### Live demo: https://auth-demo.niludigital.com/
 
 ## Features
@@ -7,6 +7,7 @@ A CRUD app that demonstrates JWT based authentication and authorization in .NET 
   - Authenticated users can update their profile information, avatar and password
   - Claim based authorization
   - Users with "Admin" claim can update anyone's profile information, delete users from the app and reset anyone's password
+  - Session lock (login session is locked after 5 minutes of inactivity, need to re-enter password to unlock)
   
 ## Technology Stack
  - C#, ASP.NET 5 WEB API, Entity Framework Core, SQL Server 2019
@@ -62,7 +63,7 @@ A CRUD app that demonstrates JWT based authentication and authorization in .NET 
             <conditions logicalGrouping="MatchAll">
               <add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true"/>
               <add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true"/>
-              <add input="{REQUEST_URI}" pattern="^(.*)\.[^./]+$" negate="true"/>
+               <add input="{REQUEST_URI}" pattern="^(.*)\.[a-zA-Z]{2,4}$" negate="true" />
               <add input="{REQUEST_URI}" pattern="api/(.*)$" negate="true"/>
             </conditions>
             <action type="Rewrite" url="/"/>
@@ -81,7 +82,7 @@ A CRUD app that demonstrates JWT based authentication and authorization in .NET 
   ```
   
   - The rewrite rules rewrites all requests except the API calls/static file requests to the the angular app (index.html file in wwwroot). 
-  - `<add input="{REQUEST_URI}" pattern="^(.*)\.[^./]+$" negate="true"/>`
+  - ` <add input="{REQUEST_URI}" pattern="^(.*)\.[a-zA-Z]{2,4}$" negate="true" />`
   - The angular app requests some static files eg. JavaScript, CSS etc. from the server, those which should not be rewritten. The above rule negates the rewrite
   for such requests.
   - `<add input="{REQUEST_URI}" pattern="api/(.*)$" negate="true"/>`

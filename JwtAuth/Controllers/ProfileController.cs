@@ -28,7 +28,7 @@ namespace JwtAuth.Controllers
         {
             try
             {
-                var user = await service.Get(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+                var user = await service.Get(Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier).Value));
                 return Ok(user);
             }
             catch
@@ -44,7 +44,7 @@ namespace JwtAuth.Controllers
             {
                 try
                 {
-                    userModel.Id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    userModel.Id = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier));
                     var user = await service.Update(userModel);
                     return Ok(user);
                 }

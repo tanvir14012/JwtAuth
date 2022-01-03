@@ -1,0 +1,71 @@
+<div class="auth-bg d-flex align-items-center wh-100">
+    <div class="container">
+        <div class="row justify-content-center m-2">
+            <div class="col-sm-12 col-md-8 col-lg-6 bg-white rounded">
+                <h1 class="text-center mt-4">Unlock session</h1>
+
+                <form [formGroup]="unlockSessionForm" #unlockSessionNgForm="ngForm">
+
+                    <!-- Name field -->
+                    <mat-form-field class="w-100">
+                        <mat-label>Email</mat-label>
+                        <input id="email" matInput [formControlName]="'email'">
+                    </mat-form-field>
+
+                    <!-- Password field -->
+                    <mat-form-field class="w-100">
+                        <mat-label>Password</mat-label>
+                        <input id="password" matInput type="password" [formControlName]="'password'" #passwordField>
+                        <button mat-icon-button type="button"
+                            (click)="passwordField.type === 'password' ? passwordField.type = 'text' : passwordField.type = 'password'"
+                            matSuffix>
+                            <mat-icon class="icon-size-5" *ngIf="passwordField.type === 'password'"
+                                >visibility</mat-icon>
+                            <mat-icon class="icon-size-5" *ngIf="passwordField.type === 'text'"
+                                >visibility_off</mat-icon>
+                        </button>
+                        <mat-hint *ngIf="unlockSessionForm.get('password').invalid">Password should contain a lowercase
+                            and a uppercase letter, a digit and a non-alphanumeric character</mat-hint>
+                        <mat-error
+                            *ngIf="unlockSessionForm.get('password').hasError('required')  
+                                && (unlockSessionForm.get('password').dirty || unlockSessionForm.get('password').touched || unlockSessionNgForm.submitted)">
+                            Password is required
+                        </mat-error>
+
+                        <mat-error *ngIf="unlockSessionForm.get('password').hasError('minlength') 
+                                && (unlockSessionForm.get('password').dirty || unlockSessionForm.get('password').touched)">
+                            Password length should be at least six
+                        </mat-error>
+
+                        <mat-error *ngIf="unlockSessionForm.get('password').hasError('maxlength')
+                                && (unlockSessionForm.get('password').dirty || unlockSessionForm.get('password').touched)">
+                            Password is too big, please choose a length less than sixty-four
+                        </mat-error>
+
+                        <mat-error *ngIf="unlockSessionForm.get('password').hasError('pattern')
+                                && (unlockSessionForm.get('password').dirty || unlockSessionForm.get('password').touched)">
+                            Please enter a lowercase and a uppercase letter, a digit and a non-alphanumeric character at
+                            least
+                        </mat-error>
+                    </mat-form-field>
+
+                    <!-- Submit button -->
+                    <button class="btn btn-light w-100 mt-3" mat-flat-button [color]="'primary'"
+                        [disabled]="unlockSessionForm.disabled" (click)="unlock()">
+                        <span *ngIf="!unlockSessionForm.disabled">
+                            Unlock your session
+                        </span>
+                        <mat-progress-spinner *ngIf="unlockSessionForm.disabled" [diameter]="24"
+                            [mode]="'indeterminate'"></mat-progress-spinner>
+                    </button>
+
+                    <!-- Form footer -->
+                    <div class="my-3 text-secondary">
+                        <button [type]="'button'" class="btn btn-sm ms-1 text-warning" (click)="signout()"><span>Sign out</span></button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

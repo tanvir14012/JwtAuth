@@ -43,9 +43,11 @@ namespace JwtAuth
             });
 
             //Configure Identity
-            services.AddIdentity<User, IdentityRole>(opts =>
+            services.AddIdentity<User, IdentityRole<int>>(options =>
             {
-                opts.User.RequireUniqueEmail = true; 
+                options.User.RequireUniqueEmail = true;
+                options.Lockout.MaxFailedAccessAttempts = 10;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
             }).AddEntityFrameworkStores<AppDbContext>()
               .AddDefaultTokenProviders();
 
@@ -79,7 +81,10 @@ namespace JwtAuth
                         var signInManager = ctx.HttpContext.RequestServices.GetRequiredService<SignInManager<User>>();
                         var userId = ctx.Principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                         var user = await userManager.FindByIdAsync(userId);
-                        ctx.Principal = await signInManager.CreateUserPrincipalAsync(user);
+                        if(user != null)
+                        {
+                            ctx.Principal = await signInManager.CreateUserPrincipalAsync(user);
+                        }
                     }
                 };
             });

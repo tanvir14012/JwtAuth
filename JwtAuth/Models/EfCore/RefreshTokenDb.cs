@@ -7,6 +7,7 @@ namespace JwtAuth.Models.EfCore
 {
     public class RefreshTokenDb
     {
+
         public Guid Id { get; set; }
         public string UserId { get; set; }
         public string TokenString { get; set; }
