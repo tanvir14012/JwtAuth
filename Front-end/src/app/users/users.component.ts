@@ -57,8 +57,8 @@ export class UsersComponent implements OnInit {
   ngOnInit(): void {
 
     this.form = this.fb.group({
-      firstName: ['', [Validators.required, Validators.pattern("^[a-zA-Z]{1,25}$")]],
-      lastName: ['', [Validators.pattern("^[a-zA-Z]{1,25}$")]],
+      firstName: ['', [Validators.required, Validators.pattern("^[a-zA-Z ]{1,25}$")]],
+      lastName: ['', [Validators.pattern("^[a-zA-Z ]{1,25}$")]],
       email: ['', [Validators.required, Validators.email, Validators.maxLength(256)]],
       profilePicture: [''],
       password: [''],

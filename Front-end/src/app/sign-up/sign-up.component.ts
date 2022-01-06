@@ -38,8 +38,8 @@ export class SignUpComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
 
     this.form = this.fb.group({
-      firstName: ['', [Validators.required, Validators.pattern("^[a-zA-Z]{1,25}$")]],
-      lastName: ['', [Validators.pattern("^[a-zA-Z]{1,25}$")]],
+      firstName: ['', [Validators.required, Validators.pattern("^[a-zA-Z ]{1,25}$")]],
+      lastName: ['', [Validators.pattern("^[a-zA-Z ]{1,25}$")]],
       email: ['', [Validators.required, Validators.email, Validators.maxLength(256)]],
       password: ['', [Validators.required, Validators.pattern("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\da-zA-Z]).{6,64}$")]],
       confirmPassword: ['', [Validators.required, Validators.pattern("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\da-zA-Z]).{6,64}$")]]

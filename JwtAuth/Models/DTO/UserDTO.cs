@@ -13,10 +13,10 @@ namespace JwtAuth.Models.DTO
     {
         public int Id { get; set; }
         [MaxLength(25)]
-        [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "First name should contain only letters")]
+        [RegularExpression(@"^[a-zA-Z ]+$", ErrorMessage = "First name should contain only letters")]
         public string FirstName { get; set; }
         [MaxLength(25)]
-        [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Last name should contain only letters")]
+        [RegularExpression(@"^[a-zA-Z ]+$", ErrorMessage = "Last name should contain only letters")]
         public string LastName { get; set; }
 
         [DataType(DataType.EmailAddress)]

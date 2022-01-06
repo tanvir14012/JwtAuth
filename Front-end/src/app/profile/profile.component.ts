@@ -41,8 +41,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
 
     this.form = this.fb.group({
-      firstName: ['', [Validators.required, Validators.pattern("^[a-zA-Z]{1,25}$")]],
-      lastName: ['', [Validators.pattern("^[a-zA-Z]{1,25}$")]],
+      firstName: ['', [Validators.required, Validators.pattern("^[a-zA-Z ]{1,25}$")]],
+      lastName: ['', [Validators.pattern("^[a-zA-Z ]{1,25}$")]],
       email: ['', [Validators.required, Validators.email, Validators.maxLength(256)]],
       profilePicture: [''],
       phoneNumber: ['', [Validators.minLength(10), Validators.maxLength(15), Validators.pattern("^[+]?[0-9]+$")]],
