@@ -48,7 +48,10 @@ A Single Page App that demonstrates JWT based authentication and authorization i
   ftp etc. If you use folder publish option, copy all contents of the "publish" folder to the root path of your site (JwtAuth\bin\Release\net5.0\publish\<all files>).
   You can use FileZilla.
   - Make a production of the front end app. You can use the following command:
-  - `ng build -c production --output-path dist/wwwroot --base-href /`
+  - `ng build -c production --output-path dist/wwwroot --base-href /` (node.js v16) or
+  - `set NODE_OPTIONS=--openssl-legacy-provider
+     ng build -c production --output-path dist/wwwroot --base-href /` (node.js v17 or greater)
+
   - The above command will create a wwwroot folder inside dist, copy the entire folder to your site's root path. 
   - We need to add some rewrite rules so that the Angular routing works along with the api.
   - There should be a web.config file created in the publish folder of the Web API project.
