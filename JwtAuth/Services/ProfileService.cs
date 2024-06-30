@@ -59,7 +59,7 @@ namespace JwtAuth.Services
                 user.ProfilePicUrl = "data:image/png;base64," + Convert.ToBase64String(bytes);
             }
 
-            userEntity.UserName = user.Email;
+            userEntity.UserName = user.Email.Split("@")[0];
 
 
             var result = await userManager.CreateAsync(userEntity, "User@123");
@@ -176,8 +176,8 @@ namespace JwtAuth.Services
                 if (user.Email != null)
                 {
                     userFromDb.NormalizedEmail = user.Email.ToUpper();
-                    userFromDb.UserName = user.Email;
-                    userFromDb.NormalizedUserName = user.Email.ToUpper();
+                    userFromDb.UserName = user.Email.Split("@")[0];
+                    userFromDb.NormalizedUserName = user.Email.Split("@")[0].ToUpper();
                 }
 
                 if (user.ProfilePicture != null)
