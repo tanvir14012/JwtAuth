@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --ssl true --ssl-key d:/selfsignedssl/code.key --ssl-cert d:/selfsignedssl/code.crt",
+    "start": "set NODE_OPTIONS=--openssl-legacy-provider && ng serve --ssl true --ssl-key D:/E-Documents/SelfSignedSSL/code.key --ssl-cert D:/E-Documents/SelfSignedSSL/code.crt",
     "build": "ng build",
     "build:prod": "set NODE_OPTIONS=--openssl-legacy-provider && ng build -c production --output-path dist/wwwroot --base-href /",
     "watch": "ng build --watch --configuration development",

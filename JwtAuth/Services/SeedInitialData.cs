@@ -23,7 +23,7 @@ namespace JwtAuth.Services
                 {
                     var admin = new User
                     {
-                        UserName = configuration["InitialDbSeed:Admin:Email"],
+                        UserName = configuration["InitialDbSeed:Admin:Email"].Split("@")[0],
                         Email = configuration["InitialDbSeed:Admin:Email"],
                         FirstName = configuration["InitialDbSeed:Admin:FirstName"],
                         LastName = configuration["InitialDbSeed:Admin:LastName"],

@@ -46,7 +46,7 @@ namespace JwtAuth.Controllers
                     {
                         var user = new User
                         {
-                            UserName = signUpModel.Email,
+                            UserName = signUpModel.Email.Split("@")[0],
                             Email = signUpModel.Email,
                             FirstName = signUpModel.FirstName,
                             LastName = signUpModel.LastName
