@@ -1,6 +1,6 @@
 # JwtAuth
 A Single Page App that demonstrates JWT based authentication and authorization in .NET 5 WEB API and Angular 12. 
-###### Live demo: https://auth-demo.niludigital.com/
+###### Live demo: <coming soon..>
 
 ## Features
   - Account registration, login and logout. Bearer tokens (JWT access token and refresh token) are used for authenticaion.
