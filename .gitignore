@@ -97,3 +97,12 @@ Front-end/.DS_Store
 Front-end/Thumbs.db
 
 Front-end/.gitignore
+
+# Node migration
+Node/backend/node_modules/
+Node/backend/.env
+Node/backend/uploads/
+Node/frontend/node_modules/
+Node/frontend/.next/
+Node/frontend/out/
+Node/frontend/.env.local
