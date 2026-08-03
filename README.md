@@ -1,11 +1,12 @@
 # JwtAuth
 
-A JWT authentication demo app available in two fully supported implementations:
+A JWT authentication demo app available in three fully supported implementations:
 
 | Implementation | Backend | Frontend | Database | Folder |
 |---|---|---|---|---|
 | .NET + Angular | ASP.NET 5 Web API | Angular 12 | SQL Server | `JwtAuth/` + `Front-end/` |
 | Node.js | Express.js | Next.js | MongoDB | `Node/` |
+| Python | FastAPI | Next.js | PostgreSQL | `Python/` |
 
 Historical live demos from the original project docs:
 - http://jwtauth.codecraftbox.com
@@ -84,6 +85,72 @@ cd Node/frontend && npm run build && npm start
 
 ---
 
+## Python Stack
+
+### Tech
+
+- Python 3.11+, FastAPI, SQLAlchemy, PostgreSQL
+- Next.js 14 frontend
+- JWT access tokens + HTTP-only refresh-token cookies
+
+### Project structure
+
+```text
+Python/
+  backend/   # FastAPI API
+  frontend/  # Next.js app
+```
+
+### Setup
+
+#### Backend (FastAPI + PostgreSQL)
+
+```bash
+cd Python/backend
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+copy .env.example .env
+uvicorn app.main:app --reload --port 8000
+```
+
+API runs at `http://localhost:8000` by default.
+
+Key env vars in `Python/backend/.env`:
+
+| Variable | Description |
+|---|---|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `JWT_SECRET` | Signing secret for JWTs |
+| `JWT_ISSUER` | JWT issuer claim |
+| `JWT_AUDIENCE` | JWT audience claim |
+| `FRONTEND_ORIGIN` | CORS allowed origin |
+| `ADMIN_EMAIL` | Seeded admin email |
+| `ADMIN_PASSWORD` | Seeded admin password |
+
+#### Frontend (Next.js)
+
+```bash
+cd Python/frontend
+copy .env.local.example .env.local    # set NEXT_PUBLIC_API_ROOT
+npm install
+npm run dev
+```
+
+App runs at `http://localhost:3000` by default.
+
+### Build for production
+
+```bash
+# Backend
+cd Python/backend && uvicorn app.main:app --host 0.0.0.0 --port 8000
+
+# Frontend
+cd Python/frontend && npm run build && npm start
+```
+
+---
+
 ## .NET + Angular Stack
 
 ### Tech
@@ -157,5 +224,6 @@ If API and frontend are hosted on different domains during testing, enable `with
 
 ## Notes
 
-- The Node.js and .NET stacks are independent — you can run either without the other.
+- The Node.js, Python, and .NET stacks are independent — you can run any one without the others.
 - For Node.js, if the backend exits with a MongoDB connection error, ensure MongoDB is running locally or update `MONGODB_URI` to a remote instance.
+- For Python, if startup fails, verify PostgreSQL is reachable from `DATABASE_URL`.

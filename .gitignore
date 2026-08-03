@@ -106,3 +106,16 @@ Node/frontend/node_modules/
 Node/frontend/.next/
 Node/frontend/out/
 Node/frontend/.env.local
+
+# Python FastAPI + Next.js version
+Python/backend/.env
+Python/backend/.venv/
+Python/backend/__pycache__/
+Python/backend/**/*.pyc
+Python/backend/uploads/*
+!Python/backend/uploads/profile-pics/
+!Python/backend/uploads/profile-pics/.gitkeep
+Python/frontend/node_modules/
+Python/frontend/.next/
+Python/frontend/out/
+Python/frontend/.env.local
