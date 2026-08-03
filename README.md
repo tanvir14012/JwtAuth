@@ -1,10 +1,15 @@
 # JwtAuth
 
-A JWT authentication demo app with a full Node.js stack in `Node/`:
-- **Backend:** Express.js + MongoDB
-- **Frontend:** Next.js (App Router)
+A JWT authentication demo app available in two fully supported implementations:
 
-The original ASP.NET + Angular implementation is still in the repo for legacy reference.
+| Implementation | Backend | Frontend | Database | Folder |
+|---|---|---|---|---|
+| .NET + Angular | ASP.NET 5 Web API | Angular 12 | SQL Server | `JwtAuth/` + `Front-end/` |
+| Node.js | Express.js | Next.js | MongoDB | `Node/` |
+
+Historical live demos from the original project docs:
+- http://jwtauth.codecraftbox.com
+- https://auth-demo.niludigital.com/
 
 ## Features
 
@@ -14,15 +19,16 @@ The original ASP.NET + Angular implementation is still in the repo for legacy re
 - Claim/role based admin actions (manage users)
 - Session lock after inactivity and unlock with password
 
-## Current Stack (Node.js)
+---
 
-- Node.js (LTS recommended)
-- Express.js
-- Next.js
-- MongoDB + Mongoose
-- JWT + HTTP-only refresh-token cookies
+## Node.js Stack
 
-## Project Structure
+### Tech
+
+- Node.js (LTS recommended), Express.js, Next.js, MongoDB + Mongoose
+- JWT access tokens + HTTP-only refresh-token cookies
+
+### Project structure
 
 ```text
 Node/
@@ -30,67 +36,126 @@ Node/
   frontend/  # Next.js app
 ```
 
-## Local Setup
+### Setup
 
-### 1. Backend (Express + MongoDB)
+#### Backend (Express + MongoDB)
 
 ```bash
 cd Node/backend
-cp .env.example .env
+cp .env.example .env     # fill in MONGODB_URI, JWT_SECRET, etc.
 npm install
 npm run dev
 ```
 
-Default API URL: `http://localhost:4000`
+API runs at `http://localhost:4000` by default.
 
-Important env values in `Node/backend/.env`:
-- `MONGODB_URI`
-- `JWT_SECRET`
-- `JWT_ISSUER`
-- `JWT_AUDIENCE`
-- `FRONTEND_ORIGIN`
+Key env vars in `Node/backend/.env`:
 
-### 2. Frontend (Next.js)
+| Variable | Description |
+|---|---|
+| `MONGODB_URI` | MongoDB connection string |
+| `JWT_SECRET` | Signing secret for JWTs |
+| `JWT_ISSUER` | JWT issuer claim |
+| `JWT_AUDIENCE` | JWT audience claim |
+| `FRONTEND_ORIGIN` | CORS allowed origin |
+| `ADMIN_EMAIL` | Seeded admin email |
+| `ADMIN_PASSWORD` | Seeded admin password |
+
+#### Frontend (Next.js)
 
 ```bash
 cd Node/frontend
-cp .env.local.example .env.local
+cp .env.local.example .env.local    # set NEXT_PUBLIC_API_ROOT
 npm install
 npm run dev
 ```
 
-Default app URL: `http://localhost:3000`
+App runs at `http://localhost:3000` by default.
 
-Frontend API root is configured by:
-- `NEXT_PUBLIC_API_ROOT` in `Node/frontend/.env.local`
-
-## Build
-
-### Backend
+### Build for production
 
 ```bash
-cd Node/backend
-npm start
+# Backend
+cd Node/backend && npm start
+
+# Frontend
+cd Node/frontend && npm run build && npm start
 ```
 
-### Frontend
+---
+
+## .NET + Angular Stack
+
+### Tech
+
+- C#, ASP.NET 5 Web API, Entity Framework Core, SQL Server
+- Angular 12, Angular Material, Bootstrap 5
+
+### Project structure
+
+```text
+JwtAuth/      # ASP.NET Web API backend
+Front-end/    # Angular frontend
+```
+
+### Setup
+
+#### Backend
+
+- Copy `JwtAuth/appsettings.Demo.json` to `JwtAuth/appsettings.json` and fill in the database connection string, JWT secret, admin seed data, and CORS origins.
+- Run EF Core migrations from the Package Manager Console:
+  ```
+  Add-Migration initial
+  Update-Database
+  ```
+- Build and run via Visual Studio or the .NET CLI.
+
+#### Frontend
 
 ```bash
-cd Node/frontend
-npm run build
-npm start
+cd Front-end
+npm install
 ```
+
+Set `API_ROOT` in `src/environments/environment.ts` (and `environment.prod.ts`) to your backend URL, then run:
+
+```bash
+ng serve
+```
+
+For HTTPS with a self-signed certificate:
+
+```bash
+ng serve --ssl true --ssl-key path/to/privateKey.key --ssl-cert path/to/certificate.crt
+```
+
+OpenSSL example from the original setup notes:
+
+```bash
+req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout privateKey.key -out certificate.crt
+```
+
+If API and frontend are hosted on different domains during testing, enable `withCredentials` in Angular HTTP interceptors so refresh-token cookies are sent cross-site.
+
+### Deploy in IIS
+
+1. Publish the Web API project (Folder publish) and copy the output to your site root.
+2. Build the Angular app:
+   ```bash
+   ng build -c production --output-path dist/wwwroot --base-href /
+   ```
+   For Node.js v17+ environments that require legacy OpenSSL provider:
+   ```bash
+   set NODE_OPTIONS=--openssl-legacy-provider
+   ng build -c production --output-path dist/wwwroot --base-href /
+   ```
+3. Copy `dist/wwwroot` to your site root alongside the API.
+4. Add URL rewrite rules to `web.config` so Angular routes fall through to `index.html` while `/api/*` and static files are served directly. See `JwtAuth/example_for_shared_iis_hosting_web.config` for a full example.
+5. If HTTP DELETE calls fail on IIS, remove WebDAV module/handler entries in `web.config` as in the original deployment notes.
+
+---
 
 ## Notes
 
-- If backend startup fails with MongoDB connection error, start MongoDB locally or point `MONGODB_URI` to a reachable instance.
-- `.gitignore` is updated to exclude Node build output, dependencies, uploads, and local env files.
-
-## Legacy (.NET + Angular) Notes
-
-The previous .NET 5 Web API + Angular implementation remains under:
-- `JwtAuth/` (ASP.NET backend)
-- `Front-end/` (Angular frontend)
-
-You can still use that stack if needed, but new Node instructions above are the primary path.
-
+- The Node.js and .NET stacks are independent — you can run either without the other.
+- For Node.js, if the backend exits with a MongoDB connection error, ensure MongoDB is running locally or update `MONGODB_URI` to a remote instance.
