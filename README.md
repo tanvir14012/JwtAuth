@@ -7,6 +7,10 @@ A JWT authentication demo app available in two fully supported implementations:
 | .NET + Angular | ASP.NET 5 Web API | Angular 12 | SQL Server | `JwtAuth/` + `Front-end/` |
 | Node.js | Express.js | Next.js | MongoDB | `Node/` |
 
+Historical live demos from the original project docs:
+- http://jwtauth.codecraftbox.com
+- https://auth-demo.niludigital.com/
+
 ## Features
 
 - Account registration, sign-in, refresh-token based auth, and sign-out
@@ -125,6 +129,14 @@ For HTTPS with a self-signed certificate:
 ng serve --ssl true --ssl-key path/to/privateKey.key --ssl-cert path/to/certificate.crt
 ```
 
+OpenSSL example from the original setup notes:
+
+```bash
+req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout privateKey.key -out certificate.crt
+```
+
+If API and frontend are hosted on different domains during testing, enable `withCredentials` in Angular HTTP interceptors so refresh-token cookies are sent cross-site.
+
 ### Deploy in IIS
 
 1. Publish the Web API project (Folder publish) and copy the output to your site root.
@@ -132,8 +144,14 @@ ng serve --ssl true --ssl-key path/to/privateKey.key --ssl-cert path/to/certific
    ```bash
    ng build -c production --output-path dist/wwwroot --base-href /
    ```
+   For Node.js v17+ environments that require legacy OpenSSL provider:
+   ```bash
+   set NODE_OPTIONS=--openssl-legacy-provider
+   ng build -c production --output-path dist/wwwroot --base-href /
+   ```
 3. Copy `dist/wwwroot` to your site root alongside the API.
 4. Add URL rewrite rules to `web.config` so Angular routes fall through to `index.html` while `/api/*` and static files are served directly. See `JwtAuth/example_for_shared_iis_hosting_web.config` for a full example.
+5. If HTTP DELETE calls fail on IIS, remove WebDAV module/handler entries in `web.config` as in the original deployment notes.
 
 ---
 
@@ -141,4 +159,3 @@ ng serve --ssl true --ssl-key path/to/privateKey.key --ssl-cert path/to/certific
 
 - The Node.js and .NET stacks are independent — you can run either without the other.
 - For Node.js, if the backend exits with a MongoDB connection error, ensure MongoDB is running locally or update `MONGODB_URI` to a remote instance.
-
