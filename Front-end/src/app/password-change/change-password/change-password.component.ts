@@ -1,22 +1,29 @@
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PasswordChangeErrorMatcher } from './../password-change-error-mathcer';
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, NgForm, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { Component, OnInit, viewChild } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, NgForm, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PasswordCheckErrorMatcher } from 'src/app/sign-up/password-error-matcher.';
 import { environment } from 'src/environments/environment';
+import { NgIf } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
-  selector: 'app-change-password',
-  templateUrl: './change-password.component.html',
-  styleUrls: ['./change-password.component.css']
+    selector: 'app-change-password',
+    templateUrl: './change-password.component.html',
+    styleUrls: ['./change-password.component.css'],
+    standalone: true,
+    imports: [ReactiveFormsModule, NgIf, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule]
 })
 export class ChangePasswordComponent implements OnInit {
-  @ViewChild('changePassNgForm') changePassNgForm: NgForm;
-  form: FormGroup;
+  readonly changePassNgForm = viewChild<NgForm>('changePassNgForm');
+  form!: FormGroup;
   passwordCheck: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
     let password = control.get("password")?.value,
       confirmPass = control.get("confirmPassword")?.value;

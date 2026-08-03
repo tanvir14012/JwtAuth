@@ -96,9 +96,7 @@
             </div>
             <mat-form-field>
                 <mat-label>Profile Picture</mat-label>
-                <ngx-mat-file-input formControlName="profilePicture" [disabled]="false" [color]="'primary'"
-                    [multiple]="false" [accept]="imageFormats">
-                </ngx-mat-file-input>
+                <input matInput type="file" [accept]="imageFormats" (change)="onProfilePictureSelected($event)">
             </mat-form-field>
             <mat-form-field>
                 <mat-label>First Name</mat-label>
@@ -156,7 +154,7 @@
             </ng-container>
             <mat-error *ngIf="(editSuccess == false || createSuccess == false) && errorMsg !== ''">{{errorMsg}}
             </mat-error>
-            <mat-hint *ngIf="createMode">The default password for the user without quote is: 'User@123'</mat-hint>
+            <mat-hint *ngIf="createMode">The default password for the user without quote is: 'User&#64;123'</mat-hint>
             <div *ngIf="createMode">
                 <button [disabled]="!form.dirty" mat-raised-button color="primary" class="mt-4 me-2" (click)="create()">
                     <mat-icon>{{createSuccess ? 'save_circle': 'save'}}</mat-icon>

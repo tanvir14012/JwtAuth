@@ -79,6 +79,7 @@ Front-end/!.vscode/tasks.json
 Front-end/!.vscode/launch.json
 Front-end/!.vscode/extensions.json
 Front-end/.history/*
+Front-end/.angular/
 
 # misc
 Front-end/.sass-cache

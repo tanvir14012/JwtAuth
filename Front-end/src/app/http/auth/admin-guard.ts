@@ -24,7 +24,7 @@ export class AdminGuard implements CanActivate, CanActivateChild, CanLoad{
                     && authStatus.userType.toString() == '0') {
                     return of(true);
                 }
-                this.router.navigate[''];
+                this.router.navigate(['home']);
                 return of(false);
             })
         );

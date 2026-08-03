@@ -1,30 +1,34 @@
-import { AuthStatus, SignInStatus, UserType } from './http/auth/auth-types';
-import { Router } from '@angular/router';
+import { NgIf } from '@angular/common';
+import { Component, HostListener, signal } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { ReplaySubject, Subject } from 'rxjs';
+import { take, takeUntil } from 'rxjs/operators';
+
 import { AuthService } from './http/auth/auth-service';
-import { Component, HostListener, ChangeDetectorRef } from '@angular/core';
-import { of, Subject, Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
-import { takeUntil, catchError, switchMap, distinctUntilChanged, take } from 'rxjs/operators';
+import { AuthStatus, SignInStatus } from './http/auth/auth-types';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
+  standalone: true,
+  imports: [NgIf, RouterLink, RouterOutlet, MatToolbarModule, MatIconModule, MatButtonModule, MatTooltipModule],
 })
 export class AppComponent {
-  title = 'Front-end';
-  lifeEnd$: Subject<any> = new Subject();
-  isAdmin: boolean = false;
-  isAuthenticated: boolean = false;
+  readonly lifeEnd$ = new Subject<boolean>();
+  readonly isAdmin = signal(false);
+  readonly isAuthenticated = signal(false);
   private _userIdle: ReplaySubject<boolean> = new ReplaySubject<boolean>(1);
-  private _timeoutId: any = null;
-  private _authStatus: AuthStatus;
+  private _timeoutId: ReturnType<typeof setTimeout> | null = null;
+  private _authStatus: AuthStatus | null = null;
 
   constructor(
     private router: Router,
-    private authService: AuthService,
-    private changeDetectorRef:ChangeDetectorRef) { 
-
-  }
+    private authService: AuthService) {}
 
   ngOnInit(): void {
 
@@ -35,14 +39,13 @@ export class AppComponent {
       takeUntil(this.lifeEnd$)
     ).subscribe((authStatus: AuthStatus) => {
       this._authStatus = authStatus;
-      this.isAuthenticated = authStatus && authStatus.signInStatus && authStatus.signInStatus == SignInStatus.Authenticated;
+      this.isAuthenticated.set(!!authStatus && authStatus.signInStatus === SignInStatus.Authenticated);
       if (authStatus && authStatus.userType != null && authStatus.userType.toString() === '0') {
-        this.isAdmin = true;
+        this.isAdmin.set(true);
       }
       else {
-        this.isAdmin = false;
+        this.isAdmin.set(false);
       }
-      this.changeDetectorRef.markForCheck();
     });
 
     //Idle time elapsed, subscription
@@ -108,5 +111,6 @@ export class AppComponent {
   ngOnDestroy(): void {
     this.lifeEnd$.next(true);
     this.lifeEnd$.complete();
+   this.reset();
   }
 }

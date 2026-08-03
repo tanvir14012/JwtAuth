@@ -2,21 +2,29 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserModel } from './../../profile/userModel';
 import { PasswordCheckErrorMatcher } from './../../sign-up/password-error-matcher.';
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, NgForm, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { Component, OnInit, viewChild } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, NgForm, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil, map } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
+import { NgFor, NgIf } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { environment } from 'src/environments/environment';
 
 @Component({
-  selector: 'app-reset-password',
-  templateUrl: './reset-password.component.html',
-  styleUrls: ['./reset-password.component.css']
+    selector: 'app-reset-password',
+    templateUrl: './reset-password.component.html',
+    styleUrls: ['./reset-password.component.css'],
+    standalone: true,
+    imports: [ReactiveFormsModule, NgFor, NgIf, MatFormFieldModule, MatSelectModule, MatInputModule, MatButtonModule, MatIconModule]
 })
 export class ResetPasswordComponent implements OnInit {
-  @ViewChild('resetPassNgForm') resetPassNgForm: NgForm;
-  form: FormGroup;
+  readonly resetPassNgForm = viewChild<NgForm>('resetPassNgForm');
+  form!: FormGroup;
   users: UserModel[] = [];
   passwordCheck: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
     let password = control.get("password")?.value,
