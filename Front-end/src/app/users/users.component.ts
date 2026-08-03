@@ -1,107 +1,107 @@
-import { ConfirmationData, ConfirmationDialogComponent } from './../shared/confirmation-dialog/confirmation-dialog.component';
-import { AuthService } from './../http/auth/auth-service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { Subject } from 'rxjs';
-import { catchError, distinctUntilChanged, takeUntil } from 'rxjs/operators';
-import { environment } from 'src/environments/environment';
-import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
-import { countries, Country } from '../shared/country-list';
-import { UserModel } from '../profile/userModel';
+import { NgFor, NgIf } from '@angular/common';
+import { Component, OnDestroy, OnInit, viewChild } from '@angular/core';
+import { FormBuilder, FormGroup, NgForm, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatTable } from '@angular/material/table';
-import { of } from 'rxjs';
+import { MatTable, MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { of, Subject } from 'rxjs';
+import { catchError, takeUntil } from 'rxjs/operators';
+
+import { UserModel } from '../profile/userModel';
+import { countries, Country } from '../shared/country-list';
+import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confirmation-dialog.component';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
-  styleUrls: ['./users.component.css']
+  styleUrls: ['./users.component.css'],
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    NgFor,
+    NgIf,
+    MatTableModule,
+    MatTooltipModule,
+    MatIconModule,
+    MatButtonModule,
+    MatCardModule,
+    MatListModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+  ],
 })
-export class UsersComponent implements OnInit {
-  @ViewChild('usersNgForm') usersUpNgForm: NgForm;
-  @ViewChild(MatTable) table!: MatTable<UserModel>;
-  displayedColumns:string[] = [ "profilePicUrl", "firstName", "lastName", "email", "phoneNumber", "addressLine1", 
-   "addressLine2", "country", "shortBio", "action"];
+export class UsersComponent implements OnInit, OnDestroy {
+  readonly usersUpNgForm = viewChild<NgForm>('usersNgForm');
+  readonly table = viewChild(MatTable<UserModel>);
+  readonly lifeEnd$ = new Subject<boolean>();
+
+  displayedColumns: string[] = [
+    'profilePicUrl',
+    'firstName',
+    'lastName',
+    'email',
+    'phoneNumber',
+    'addressLine1',
+    'addressLine2',
+    'country',
+    'shortBio',
+    'action',
+  ];
   users: UserModel[] = [];
-  lifeEnd$: Subject<any> = new Subject();
-  editMode: boolean = false;
-  createMode: boolean = false;
-  form: FormGroup;
-  createSuccess: boolean = false;
-  editSuccess: boolean = false;
+  editMode = false;
+  createMode = false;
+  form!: FormGroup;
+  createSuccess = false;
+  editSuccess = false;
   updateErrors: string[] = [];
   createErrors: string[] = [];
-  errorMsg: string = '';
-  imageFormats: string = ".jpg, .jpeg, .png, .tiff, .gif";
-  previewPic: string = '';
+  errorMsg = '';
+  imageFormats = '.jpg, .jpeg, .png, .tiff, .gif';
+  previewPic = '';
   countries: Country[] = countries;
   user: UserModel = new UserModel();
-  selectedUserId: string = '';
-  loading: boolean = true;
+  selectedUserId = '';
+  loading = true;
 
   constructor(
-    private router: Router,
-    private httpClient: HttpClient,
-    private authService: AuthService,
-    private fb: FormBuilder,
-    private dialog: MatDialog,
-    private snackBar: MatSnackBar,
-    private changeDetectorRef: ChangeDetectorRef
-  ) 
-  { 
-    
-  }
+    private readonly httpClient: HttpClient,
+    private readonly fb: FormBuilder,
+    private readonly dialog: MatDialog,
+    private readonly snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
-
     this.form = this.fb.group({
-      firstName: ['', [Validators.required, Validators.pattern("^[a-zA-Z ]{1,25}$")]],
-      lastName: ['', [Validators.pattern("^[a-zA-Z ]{1,25}$")]],
+      firstName: ['', [Validators.required, Validators.pattern('^[a-zA-Z ]{1,25}$')]],
+      lastName: ['', [Validators.pattern('^[a-zA-Z ]{1,25}$')]],
       email: ['', [Validators.required, Validators.email, Validators.maxLength(256)]],
-      profilePicture: [''],
+      profilePicture: [null],
       password: [''],
-      phoneNumber: ['', [Validators.minLength(10), Validators.maxLength(15), 
-        Validators.pattern("^[+]?[0-9]+$")]],
+      phoneNumber: ['', [Validators.minLength(10), Validators.maxLength(15), Validators.pattern('^[+]?[0-9]+$')]],
       addressLine1: ['', [Validators.maxLength(50)]],
       addressLine2: ['', [Validators.maxLength(50)]],
       country: ['', [Validators.maxLength(50)]],
-      shortBio: ['', [Validators.maxLength(1000)]]
+      shortBio: ['', [Validators.maxLength(1000)]],
     });
 
-    /**
-     * Get the list of user
-     */
-    this.httpClient.get(`${environment.API_ROOT}/profile/getAll`)
-        .pipe(
-          takeUntil(this.lifeEnd$)
-        ).subscribe((userList:any) => {
-          this.users = userList;
-          this.loading = false;
-        });
-
-    /**
-       * Preview profile pic
-       */
-     this.form.get("profilePicture")?.valueChanges
-     .pipe(
-       takeUntil(this.lifeEnd$),
-       distinctUntilChanged()
-     ).subscribe(value => {
-       if(value) {
-        let reader = new FileReader();
-        reader.onload = e => {
-          let dataURL = reader.result;
-          if(dataURL) {
-            this.previewPic = dataURL.toString();
-          }
-        };
-        reader.readAsDataURL(value);
-       }
-       
-     });
-
+    this.httpClient
+      .get(`${environment.API_ROOT}/profile/getAll`)
+      .pipe(takeUntil(this.lifeEnd$))
+      .subscribe((userList: any) => {
+        this.users = userList;
+        this.loading = false;
+      });
   }
 
   ngOnDestroy(): void {
@@ -109,185 +109,187 @@ export class UsersComponent implements OnInit {
     this.lifeEnd$.complete();
   }
 
+  onProfilePictureSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0] ?? null;
+    this.form.get('profilePicture')?.setValue(file);
+    if (!file) {
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataURL = reader.result;
+      if (dataURL) {
+        this.previewPic = dataURL.toString();
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
   editUser(id: string): void {
     this.editMode = true;
     this.selectedUserId = id;
-    let selectedUser = this.users.find(u => u.id === id);
-    if(selectedUser) {
-      this.user = selectedUser;
-    }
-    else {
-      this.user = new UserModel();
-    }
+    const selectedUser = this.users.find((u) => u.id === id);
+    this.user = selectedUser ? selectedUser : new UserModel();
 
-    Object.keys(this.user).forEach(key => {
-        this.form.get(key)?.setValue(this.user[key as keyof UserModel] 
-          ? this.user[key as keyof UserModel]: '');
+    Object.keys(this.user).forEach((key) => {
+      this.form.get(key)?.setValue(this.user[key as keyof UserModel] ? this.user[key as keyof UserModel] : '');
     });
+    this.form.get('profilePicture')?.setValue(null);
     this.previewPic = this.user.profilePicUrl;
-
   }
 
   createUser(): void {
     this.createMode = true;
     this.form.reset();
+    this.form.get('profilePicture')?.setValue(null);
+    this.previewPic = '';
   }
 
-  /**
-   * Create a user
-   */
   create(): void {
-
-    if(this.form.valid) {
-      let formData = new FormData();
-      for(var key in this.form.value) {
-        const value = this.form.value[key];
-        if(value) {
-          formData.append(key, this.form.value[key]);
-        }
+    if (!this.form.valid) {
+      return;
+    }
+    const formData = new FormData();
+    Object.keys(this.form.value).forEach((key) => {
+      const value = this.form.value[key];
+      if (value) {
+        formData.append(key, value);
       }
+    });
 
-      const headers = new HttpHeaders().append("Content-Disposition", "multipart/form-data");
-      this.httpClient.post(
-        `${environment.API_ROOT}/profile/createUser`, 
-        formData,
-        {
-          headers: headers
-        })
+    const headers = new HttpHeaders().append('Content-Disposition', 'multipart/form-data');
+    this.httpClient
+      .post(`${environment.API_ROOT}/profile/createUser`, formData, { headers })
       .pipe(
         takeUntil(this.lifeEnd$),
-        catchError(errResp => {
+        catchError((errResp) => {
           this.createSuccess = false;
-          if(errResp.error  && Array.isArray(errResp.error)) {
+          if (errResp.error && Array.isArray(errResp.error)) {
             this.createErrors = errResp.error;
-          }
-          else {
-            this.errorMsg = "Something went wrong while creating the user. Please try again later.";
+          } else {
+            this.errorMsg = 'Something went wrong while creating the user. Please try again later.';
           }
           return of(null);
         })
-      ).subscribe((user:any) => {
-        
-        if(user) 
-        {
-          this.user = new UserModel();
-          Object.keys(user).forEach(key => {
-            if(this.user.hasOwnProperty(key)) {
-              this.user[key as keyof UserModel] = user[key];
-            }
-          });
-
-          this.previewPic = this.user.profilePicUrl;
-          this.users.push(this.user);
-          this.createMode = false;
-          this.form.reset();
-
-          this.snackBar.open("The user has been created successfully", undefined, {
-            duration: 2500
-          } );
+      )
+      .subscribe((user: any) => {
+        if (!user) {
+          return;
         }
-      
-        
+        this.user = new UserModel();
+        Object.keys(user).forEach((key) => {
+          if (this.user.hasOwnProperty(key)) {
+            this.user[key as keyof UserModel] = user[key];
+          }
+        });
+
+        this.previewPic = this.user.profilePicUrl;
+        this.users.push(this.user);
+        this.createMode = false;
+        this.form.reset();
+        this.form.get('profilePicture')?.setValue(null);
+
+        this.snackBar.open('The user has been created successfully', undefined, {
+          duration: 2500,
+        });
       });
-    }
   }
 
-  /**
-   * Update user profile information
-   */
   update(): void {
-    if(!this.selectedUserId) {
+    if (!this.selectedUserId) {
       this.editMode = false;
+      return;
+    }
+    if (!this.form.valid) {
+      return;
     }
 
-    if(this.form.valid) {
-      let formData = new FormData();
-      formData.append("id", this.selectedUserId);
-      for(var key in this.form.value) {
-        formData.append(key, this.form.value[key]);
+    const formData = new FormData();
+    formData.append('id', this.selectedUserId);
+    Object.keys(this.form.value).forEach((key) => {
+      const value = this.form.value[key];
+      if (value !== null && value !== undefined && value !== '') {
+        formData.append(key, value);
       }
+    });
 
-      const headers = new HttpHeaders().append("Content-Disposition", "multipart/form-data");
-      this.httpClient.post(
-        `${environment.API_ROOT}/profile/updateDetailsByAdmin`, 
-        formData,
-        {
-          headers: headers
-        })
+    const headers = new HttpHeaders().append('Content-Disposition', 'multipart/form-data');
+    this.httpClient
+      .post(`${environment.API_ROOT}/profile/updateDetailsByAdmin`, formData, { headers })
       .pipe(
         takeUntil(this.lifeEnd$),
-        catchError(errResp => {
+        catchError((errResp) => {
           this.editSuccess = false;
-          if(errResp.error  && Array.isArray(errResp.error)) {
+          if (errResp.error && Array.isArray(errResp.error)) {
             this.updateErrors = errResp.error;
-          }
-          else {
-            this.errorMsg = "Something went wrong while updating the user. Please try again later.";
+          } else {
+            this.errorMsg = 'Something went wrong while updating the user. Please try again later.';
           }
           return of(null);
         })
-      ).subscribe((user:any) => {
-        if(user) {
-          this.editMode = false;
-          this.user = new UserModel();
-          Object.keys(user).forEach(key => {
-            if(this.user.hasOwnProperty(key)) {
-              this.user[key as keyof UserModel] = user[key];
-              this.form.get(key)?.setValue(user[key] != null ? user[key]: '');
-            }
-          });
-  
-          let index = this.users.findIndex(u => u.id === this.user.id);
-          if(index !== -1) {
-            this.users[index] = this.user;
-          }
-  
-          this.snackBar.open("User information updated successfully", undefined, {
-            duration: 2500
-          } );
+      )
+      .subscribe((user: any) => {
+        if (!user) {
+          return;
         }
+        this.editMode = false;
+        this.user = new UserModel();
+        Object.keys(user).forEach((key) => {
+          if (this.user.hasOwnProperty(key)) {
+            this.user[key as keyof UserModel] = user[key];
+            this.form.get(key)?.setValue(user[key] != null ? user[key] : '');
+          }
+        });
+
+        const index = this.users.findIndex((u) => u.id === this.user.id);
+        if (index !== -1) {
+          this.users[index] = this.user;
+        }
+
+        this.form.get('profilePicture')?.setValue(null);
+        this.snackBar.open('User information updated successfully', undefined, {
+          duration: 2500,
+        });
       });
-    }
   }
 
-  /**
-   * Deletes a user
-   * @param id: The user ID
-   */
   deleteUser(id: string): void {
-    let user = this.users.find(u => u.id === id);
-    if(user) {
-      this.dialog.open(ConfirmationDialogComponent, {
-        data: {
-          heading: "Confirm Delete Action",
-          message: `The user ${user.firstName} ${user.lastName} will be deleted permanently. The action can not be undone.`,
-          headingCssClass: "text-danger",
-          messageCssClass: "text-secondary"
-        }
-      }).afterClosed().subscribe((confirmed) => {
-          if(confirmed) {
-            this.httpClient.delete(`${environment.API_ROOT}/profile/deleteUser/${id}`)
-                .pipe(
-                  takeUntil(this.lifeEnd$)
-                ).subscribe(success => {
-                  if(success) {
-                    let index = this.users.findIndex(u => u.id === id);
-                    this.users.splice(index, 1);
-                    this.table.renderRows();
-                    this.snackBar.open("The user has been deleted successfully.", undefined, {
-                      duration: 2500
-                    } );
-                  }
-                  else {
-                    this.snackBar.open("An error occurred while deleting the user. Please try again.", undefined, {
-                      duration: 2500
-                    } );
-                  }
-                }) 
-              
-          }
-      });
+    const user = this.users.find((u) => u.id === id);
+    if (!user) {
+      return;
     }
+    this.dialog
+      .open(ConfirmationDialogComponent, {
+        data: {
+          heading: 'Confirm Delete Action',
+          message: `The user ${user.firstName} ${user.lastName} will be deleted permanently. The action can not be undone.`,
+          headingCssClass: 'text-danger',
+          messageCssClass: 'text-secondary',
+        },
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (!confirmed) {
+          return;
+        }
+        this.httpClient
+          .delete(`${environment.API_ROOT}/profile/deleteUser/${id}`)
+          .pipe(takeUntil(this.lifeEnd$))
+          .subscribe((success) => {
+            if (success) {
+              const index = this.users.findIndex((u) => u.id === id);
+              this.users.splice(index, 1);
+              this.table()?.renderRows();
+              this.snackBar.open('The user has been deleted successfully.', undefined, {
+                duration: 2500,
+              });
+            } else {
+              this.snackBar.open('An error occurred while deleting the user. Please try again.', undefined, {
+                duration: 2500,
+              });
+            }
+          });
+      });
   }
 
   clear(): void {
@@ -295,7 +297,7 @@ export class UsersComponent implements OnInit {
     this.editMode = false;
     this.createErrors = [];
     this.updateErrors = [];
-    this.errorMsg = "";
+    this.errorMsg = '';
+    this.form.get('profilePicture')?.setValue(null);
   }
-
 }

@@ -4,7 +4,7 @@ A JWT authentication demo app available in three fully supported implementations
 
 | Implementation | Backend | Frontend | Database | Folder |
 |---|---|---|---|---|
-| .NET + Angular | ASP.NET 5 Web API | Angular 12 | SQL Server | `JwtAuth/` + `Front-end/` |
+| .NET + Angular | ASP.NET Core 8 Web API | Angular (standalone + signals) | SQL Server | `JwtAuth/` + `Front-end/` |
 | Node.js | Express.js | Next.js | MongoDB | `Node/` |
 | Python | FastAPI | Next.js | PostgreSQL | `Python/` |
 
@@ -155,8 +155,8 @@ cd Python/frontend && npm run build && npm start
 
 ### Tech
 
-- C#, ASP.NET 5 Web API, Entity Framework Core, SQL Server
-- Angular 12, Angular Material, Bootstrap 5
+- C#, ASP.NET Core 8 Web API, Entity Framework Core, SQL Server
+- Angular 18+, standalone components, signal queries, Angular Material, Bootstrap 5
 
 ### Project structure
 

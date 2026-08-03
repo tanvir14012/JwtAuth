@@ -1,19 +1,26 @@
 import { AuthService } from './../http/auth/auth-service';
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, NgForm, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { Component, OnDestroy, OnInit, viewChild } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, NgForm, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { PasswordCheckErrorMatcher } from './password-error-matcher.';
 import { Router } from '@angular/router';
 import { takeUntil } from 'rxjs/operators';
+import { NgIf } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
-  selector: 'app-sign-up',
-  templateUrl: './sign-up.component.html',
-  styleUrls: ['./sign-up.component.css']
+    selector: 'app-sign-up',
+    templateUrl: './sign-up.component.html',
+    styleUrls: ['./sign-up.component.css'],
+    standalone: true,
+    imports: [ReactiveFormsModule, NgIf, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule]
 })
 export class SignUpComponent implements OnInit, OnDestroy {
-  @ViewChild('signUpNgForm') signUpNgForm: NgForm;
-  form: FormGroup;
+  readonly signUpNgForm = viewChild<NgForm>('signUpNgForm');
+  form!: FormGroup;
   passwordCheck: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
     let password = control.get("password")?.value,
       confirmPass = control.get("confirmPassword")?.value;

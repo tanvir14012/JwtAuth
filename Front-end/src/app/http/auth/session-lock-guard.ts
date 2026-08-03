@@ -24,7 +24,7 @@ export class SessionLockGuard implements CanActivate, CanActivateChild, CanLoad{
                     return of(true);
                 }
                 else {
-                    this.router.navigate['home'];
+                    this.router.navigate(['home']);
                     return of(false);
                 }
                 

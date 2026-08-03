@@ -8,7 +8,9 @@ import { environment } from 'src/environments/environment';
 import { AuthUtils } from '../auth.utils';
 import { AuthStatus, SignInStatus } from './auth-types';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class AuthService {
     public isAuthenticated$: ReplaySubject<boolean> = new ReplaySubject<boolean>(1);
     public isAdmin$: ReplaySubject<boolean> = new ReplaySubject<boolean>(1);

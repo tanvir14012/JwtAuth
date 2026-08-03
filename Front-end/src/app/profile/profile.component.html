@@ -54,9 +54,7 @@
                 </div>
                 <mat-form-field>
                     <mat-label>Profile Picture</mat-label>
-                    <ngx-mat-file-input formControlName="profilePicture" [disabled]="false" [color]="'primary'"
-                        [multiple]="false" [accept]="imageFormats">
-                    </ngx-mat-file-input>
+                    <input matInput type="file" [accept]="imageFormats" (change)="onProfilePictureSelected($event)">
                 </mat-form-field>
                 <mat-form-field>
                     <mat-label>First Name</mat-label>

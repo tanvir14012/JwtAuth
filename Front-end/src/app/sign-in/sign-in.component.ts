@@ -1,18 +1,26 @@
 import { AuthService } from './../http/auth/auth-service';
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
+import { Component, OnDestroy, OnInit, viewChild } from '@angular/core';
+import { FormBuilder, FormGroup, NgForm, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { of, Subject, Subscription } from 'rxjs';
+import { NgIf } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { of, Subject } from 'rxjs';
 import { catchError, takeUntil } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-sign-in',
-  templateUrl: './sign-in.component.html',
-  styleUrls: ['./sign-in.component.css']
+    selector: 'app-sign-in',
+    templateUrl: './sign-in.component.html',
+    styleUrls: ['./sign-in.component.css'],
+    standalone: true,
+    imports: [ReactiveFormsModule, NgIf, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatCheckboxModule]
 })
 export class SignInComponent implements OnInit, OnDestroy {
-  @ViewChild('signInNgForm') signInNgForm: NgForm;
-  form: FormGroup;
+  readonly signInNgForm = viewChild<NgForm>('signInNgForm');
+  form!: FormGroup;
   passHide: boolean = true;
   attemptFailed: boolean = false;
   errorMsg: string = '';

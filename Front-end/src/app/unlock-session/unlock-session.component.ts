@@ -1,5 +1,11 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
+import { NgIf } from '@angular/common';
+import { Component, OnInit, ViewEncapsulation, viewChild } from '@angular/core';
+import { FormBuilder, FormGroup, NgForm, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -7,23 +13,24 @@ import { AuthService } from '../http/auth/auth-service';
 import { AuthStatus } from '../http/auth/auth-types';
 
 @Component({
-    selector     : 'auth-unlock-session',
-    templateUrl  : './unlock-session.component.html',
+    selector: 'auth-unlock-session',
+    templateUrl: './unlock-session.component.html',
     styleUrls: ['./unlock-session.component.css'],
     encapsulation: ViewEncapsulation.None,
+    standalone: true,
+    imports: [ReactiveFormsModule, NgIf, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
 })
 export class AuthUnlockSessionComponent implements OnInit
 {
-    @ViewChild('unlockSessionNgForm') unlockSessionNgForm: NgForm;
+    readonly unlockSessionNgForm = viewChild<NgForm>('unlockSessionNgForm');
 
     alert: { type: string; message: string } = {
         type   : 'success',
         message: ''
     };
-    private _authStatus: AuthStatus = null;
+    private _authStatus: AuthStatus | null = null;
     showAlert: boolean = false;
-    unlockSessionForm: FormGroup;
-    private _email: string;
+    unlockSessionForm!: FormGroup;
     lifeEnd$: Subject<boolean> = new Subject();
 
     /**
@@ -110,9 +117,9 @@ export class AuthUnlockSessionComponent implements OnInit
                 this.unlockSessionForm.enable();
 
                 // Reset the form
-                this.unlockSessionNgForm.resetForm({
+                this.unlockSessionNgForm()?.resetForm({
                     email: {
-                        value   : this._authStatus.userEmail,
+                        value   : this._authStatus?.userEmail,
                         disabled: true
                     }
                 });
