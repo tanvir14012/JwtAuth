@@ -1,4 +1,4 @@
-# Node.js Migration
+# Node.js
 
 This folder contains the Node.js version of the app:
 
